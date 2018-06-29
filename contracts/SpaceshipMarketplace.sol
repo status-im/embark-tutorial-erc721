@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
+import "./SpaceshipToken.sol";
 
 contract SpaceshipMarketPlace {
 
@@ -10,14 +10,14 @@ contract SpaceshipMarketPlace {
         address owner;
     }
 
-    ERC721Token token;
+    SpaceshipToken token;
 
     Sale[] public sales;
     mapping(uint => uint) spaceshipToSale;
 
     event NewSale(uint indexed spaceshipId, uint price, uint saleId);
 
-    constructor(ERC721Token _token) public{
+    constructor(SpaceshipToken _token) public{
         token = _token;
     }
 

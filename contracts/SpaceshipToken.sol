@@ -26,7 +26,7 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
         uint8 speed;
         uint8 experience;
         uint8 level;
-        uint attackCooldown;
+        uint cooldown;
         Vector position;
     }
 
@@ -42,7 +42,7 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
                   uint8 _attack, 
                   uint8 _defense, 
                   uint8 _speed,
-                  uint attackCooldown,
+                  uint _cooldown,
                   uint _price)
                   public 
                   onlyOwner {
@@ -57,7 +57,7 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
             category: _category,
             experience: 0,
             level: 0,
-            attackCooldown: 0,
+            cooldown: _cooldown,
             position: p
         });
 
