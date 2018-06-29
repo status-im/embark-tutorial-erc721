@@ -32,10 +32,11 @@ module.exports = {
     ],
     gas: "auto",
     contracts: {
-      // example:
-      //SimpleStorage: {
-      //  args: [ 100 ]
-      //}
+      "AddressUtils": { "deploy": false },
+      "SafeMath": { "deploy": false },
+      "ERC721Token": { "deploy": false },
+      "ERC721BasicToken": { "deploy": false },
+      "Ownable": { "deploy": false }
     }
   }
 };
