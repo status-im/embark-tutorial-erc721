@@ -36,7 +36,14 @@ module.exports = {
       "SafeMath": { "deploy": false },
       "ERC721Token": { "deploy": false },
       "ERC721BasicToken": { "deploy": false },
-      "Ownable": { "deploy": false }
+      "Ownable": { "deploy": false },
+
+      "SpaceshipToken": {},
+      "SpaceshipMarketPlace": {
+        args:["$SpaceshipToken"]
+      },
+      "SpaceBattle": {},
+
     }
   }
 };
