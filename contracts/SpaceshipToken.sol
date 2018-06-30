@@ -12,23 +12,25 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
     /// @dev Estructura que representa nuestra nave spacial
     struct Spaceship {
         bytes32 metadataHash; // IPFS Hash 
-        uint HP;
+        int HP;
         uint8 attack;
         uint8 defense;
         uint8 speed;
         uint cooldown;
-        uint8 level;
+        uint level;
         uint experience;
     }
 
     // Todas las naves que se han creado.
     Spaceship[] public spaceships;
 
+    event LevelUp(uint spaceshipId, uint level);
+
     // Precio de las naves
     mapping(uint => uint) spaceshipPrices;
 
     function mint(bytes32 _metadataHash,
-                  uint8 _HP, 
+                  int _HP, 
                   uint8 _attack, 
                   uint8 _defense, 
                   uint8 _speed,
@@ -86,43 +88,38 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
         _;
     }
 
-    function updateShipHP(uint _shipId, uint _HP) onlySpaceBattle {
-        require(ownerOf(_shipId) != address(0));
-
-        Spaceship storage s = spaceships[_shipId];
-
-        if(_HP == 0){
-            // Destroy token
-            _burn(msg.sender,  _shipId);
-        } else {
-            s.HP = _HP;
-        }
+    function destroyShip(uint _spaceshipId) onlySpaceBattle {
+        require(ownerOf(_spaceshipId) != address(0));
+        _burn(msg.sender, _spaceshipId);
     }
 
-    function gainExperience(uint _shipId, uint _experience) onlySpaceBattle {
-        require(ownerOf(_shipId) != address(0));
+    function gainExperience(uint _spaceshipId, uint _experience) onlySpaceBattle returns(bool levelUp){
+        require(ownerOf(_spaceshipId) != address(0));
 
-        Spaceship storage s = spaceships[_shipId];
+        Spaceship storage s = spaceships[_spaceshipId];
 
         uint currentExperience = s.experience;
         if(currentExperience + _experience > s.level * 100){
             s.level++;
+            s.HP = s.HP * 120 / 100; // TODO: tune this
             s.experience = 0;
+            levelUp = true;
+            emit LevelUp(_spaceshipId, s.level);
         } else {
             s.experience += _experience;
         }
     }
 
-    function getAttributes(uint _shipId) public view returns (
-        uint HP,
+    function getAttributes(uint _spaceshipId) public view returns (
+        int HP,
         uint8 attack,
         uint8 defense,
         uint8 speed,
         uint experience,
-        uint8 level,
+        uint level,
         uint cooldown
     ){
-        Spaceship storage s = spaceships[_shipId];
+        Spaceship storage s = spaceships[_spaceshipId];
         
         HP = s.HP;
         attack = s.attack;

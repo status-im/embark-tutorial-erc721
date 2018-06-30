@@ -8,7 +8,7 @@ contract SpaceBattle {
     struct ShipState {
         uint x;
         uint y;
-        uint health;
+        int health;
         address owner;
         uint lastActionBlock;
     }
@@ -21,7 +21,9 @@ contract SpaceBattle {
 
     event ShipJoinedBattle(uint indexed shipId, uint x, uint y);
     event ShipLeftBattle(uint indexed shipId);
-    event ShipRepaired(uint indexed shipId, uint health);
+    event ShipRepaired(uint indexed shipId, int health);
+    event ShipDestroyed(uint indexed shipId, uint indexed destroyedBy);
+    event ShipAttacked(uint indexed shipId, uint indexed attackedBy, int health);
 
     constructor(SpaceshipToken _token) public{
         token = _token;
@@ -34,7 +36,7 @@ contract SpaceBattle {
 
         gameGrid[_x][_y] = _myShipId;
 
-        uint HP;
+        int HP;
         (HP,,,,,,) = token.getAttributes(_myShipId);
 
         shipState[_myShipId].owner = msg.sender;
@@ -48,9 +50,12 @@ contract SpaceBattle {
     modifier requiresCooldown(uint _myShipId){
         uint cooldown;
         (,,,,,, cooldown) = token.getAttributes(_myShipId);
-        ShipState memory state = shipState[_myShipId];
+        ShipState storage state = shipState[_myShipId];
         require(state.lastActionBlock + cooldown < block.number);
+        
         _;
+
+        state.lastActionBlock = block.number;
     }
 
     function hasEnemy(uint _x, uint _y) private returns(bool){
@@ -91,20 +96,56 @@ contract SpaceBattle {
         state.y = _y;
     }
 
-    function attack(uint _myShipId, uint _shipId) public requiresCooldown(_myShipId) {
-        // Attack must take in account the level
-        // Attack will reduce HP, and takes in account defense and level
-        // Enemigo debe estar al lado
+    function attack(uint _myShipId, uint _enemyShipId) public requiresCooldown(_myShipId) {
+        ShipState storage myState = shipState[_myShipId];
+        ShipState storage enemyState = shipState[_enemyShipId];
+
+        require(myState.owner == msg.sender);
+        require(canAttack(_myShipId, _enemyShipId));
+
+        int myHP;
+        uint myAttack;
+        uint enemyAttack;
+        uint enemyDefense;
+        uint myLevel;
+        uint enemyLevel;
+
+        (myHP,myAttack,,,,myLevel,) = token.getAttributes(_myShipId);
+        (,enemyAttack,enemyDefense,,,enemyLevel,) = token.getAttributes(_enemyShipId);
+
+        int attackPower = int(myLevel * myAttack - enemyLevel * enemyLevel);
+        if(attackPower < 0)
+            attackPower = 0;
+        
+        enemyState.health -= attackPower;
+
+        if(enemyState.health < 0){
+            // Reparamos la mitad del dano de la nave
+            myState.health += (myHP - myState.health) / 2;
+            if(token.gainExperience(_myShipId, enemyLevel * enemyAttack * enemyDefense)){
+                (myHP,,,,,,) = token.getAttributes(_myShipId);
+                myState.health = myHP;
+            }
+
+            // Destruir enemigo
+            token.destroyShip(_enemyShipId);
+            delete gameGrid[enemyState.x][enemyState.y];
+            delete shipState[_enemyShipId];
+
+            emit ShipDestroyed(_enemyShipId, _myShipId);
+        } else {
+            emit ShipAttacked(_enemyShipId, _myShipId, enemyState.health);
+        }
     }
 
     function repair(uint _myShipId) payable requiresCooldown(_myShipId) {
-        uint cost = repairCost(_myShipId);
+        uint cost = uint(repairCost(_myShipId));
         ShipState storage myState = shipState[_myShipId];
 
         require(msg.value >= cost);
         require(myState.owner == msg.sender);
 
-        uint HP;
+        int HP;
         (HP,,,,,,) = token.getAttributes(_myShipId);
 
         myState.health = HP;
@@ -177,13 +218,13 @@ contract SpaceBattle {
                (myState.x == enemyState.x && myState.y - 1 == enemyState.y);
     }
 
-    function repairCost(uint _myShipId) public view returns(uint) {
+    function repairCost(uint _myShipId) public view returns(int) {
         ShipState memory state = shipState[_myShipId];
 
-        uint HP;
+        int HP;
         (HP,,,,,,) = token.getAttributes(_myShipId);
 
-        uint missingHealth = HP - state.health;
+        int missingHealth = HP - state.health;
 
         return missingHealth * 2000; // TODO: tune this
     }
