@@ -53,12 +53,22 @@ contract SpaceBattle {
         _;
     }
 
+    function hasEnemy(uint _x, uint _y) private returns(bool){
+        ShipState memory s = shipState[gameGrid[_x][_y]];
+        return  s.owner != msg.sender &&
+                s.owner != address(0);
+    }
+
     function leaveGame(uint _myShipId) public requiresCooldown(_myShipId) {
         require(shipState[_myShipId].owner == msg.sender);
 
         ShipState memory state = shipState[_myShipId];
 
-        // TODO: check there's no one at my side
+        // No debe haber enemigos al lado
+        require(!hasEnemy(state.x, state.y + 1) && 
+                !hasEnemy(state.x, state.y - 1) &&
+                !hasEnemy(state.x + 1, state.y) &&
+                !hasEnemy(state.x - 1, state.y));
 
         delete gameGrid[state.x][state.y];
         delete shipState[_myShipId];
@@ -84,6 +94,7 @@ contract SpaceBattle {
     function attack(uint _myShipId, uint _shipId) public requiresCooldown(_myShipId) {
         // Attack must take in account the level
         // Attack will reduce HP, and takes in account defense and level
+        // Enemigo debe estar al lado
     }
 
     function repair(uint _myShipId) payable requiresCooldown(_myShipId) {
@@ -106,9 +117,44 @@ contract SpaceBattle {
     }
 
     function canMove(uint _myShipId, uint _x, uint _y) public view returns(bool) {
-        // Check if I can reach position
-        // Check if position is occupied
-        // Can only move horizontal / vertically
+        ShipState storage myState = shipState[_myShipId];
+
+        // Tiene que moverse a algun sitio
+        if(myState.x == _x && myState.y == _y)
+            return false;
+
+        // Solo se puede mover horizontal o vertical
+        if(myState.x != _x && myState.y != _y)
+            return false;
+        
+        if(myState.owner != msg.sender) return false;
+
+        uint cooldown;
+        uint speed;
+        (,,,speed,,, cooldown) = token.getAttributes(_myShipId);
+        if(myState.lastActionBlock + cooldown > block.number)
+            return false;
+
+        // Verificamos que podamos llegar a la posicion
+        require((_x >= myState.x - speed && _x <= myState.x + speed) ||
+                (_y >= myState.y - speed && _y <= myState.y + speed));
+
+        uint startX = myState.x > _x ? _x : myState.x;
+        uint endX =   myState.x > _x ? myState.x : _x;
+        uint startY = myState.y > _y ? _y : myState.y;
+        uint endY =   myState.y > _y ? myState.y : _y;
+
+        // Verificamos si la posicion esta ocupada
+        for(uint i = startX; i <= endX; i++){
+            for(uint j = startY; j <= endY; j++){
+                uint currShip = gameGrid[i][j];
+                if(shipState[currShip].owner != address(0)){
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     function canAttack(uint _myShipId, uint _enemyShipId) public view returns(bool) {
