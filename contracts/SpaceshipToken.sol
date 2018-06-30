@@ -10,24 +10,15 @@ import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
 
     /// @dev Estructura que representa nuestra nave spacial
-    enum ShipCategory {NONE, FIGHTER, FRIGATE, BATTLESHIP}
-
-    struct Vector {
-        uint256 x;
-        uint256 y;
-    }
-
     struct Spaceship {
         bytes32 metadataHash; // IPFS Hash 
-        ShipCategory category;
-        uint8 HP;
+        uint HP;
         uint8 attack;
         uint8 defense;
         uint8 speed;
-        uint8 experience;
-        uint8 level;
         uint cooldown;
-        Vector position;
+        uint8 level;
+        uint experience;
     }
 
     // Todas las naves que se han creado.
@@ -37,7 +28,6 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
     mapping(uint => uint) spaceshipPrices;
 
     function mint(bytes32 _metadataHash,
-                  ShipCategory _category, 
                   uint8 _HP, 
                   uint8 _attack, 
                   uint8 _defense, 
@@ -47,18 +37,15 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
                   public 
                   onlyOwner {
 
-        Vector memory p = Vector(0, 0);
         Spaceship memory s = Spaceship({
             metadataHash: _metadataHash,
             HP: _HP,
             attack: _attack,
             defense: _defense,
             speed: _speed,
-            category: _category,
             experience: 0,
-            level: 0,
-            cooldown: _cooldown,
-            position: p
+            level: 1,
+            cooldown: _cooldown
         });
 
         uint spaceshipId = spaceships.push(s) - 1;
@@ -85,7 +72,64 @@ contract SpaceshipToken is ERC721Token("SpaceshipToken", "SST"), Ownable {
     }
 
     function withdrawBalance() external onlyOwner {
-        owner.transfer(this.balance);
+        owner.transfer(address(this).balance);
     }
 
+    address public spaceBattle;
+
+    function setSpaceBattleAddress(address _spaceBattle) onlyOwner {
+        spaceBattle = _spaceBattle;
+    }
+
+    modifier onlySpaceBattle(){
+        require(msg.sender == spaceBattle);
+        _;
+    }
+
+    function updateShipHP(uint _shipId, uint _HP) onlySpaceBattle {
+        require(ownerOf(_shipId) != address(0));
+
+        Spaceship storage s = spaceships[_shipId];
+
+        if(_HP == 0){
+            // Destroy token
+            _burn(msg.sender,  _shipId);
+        } else {
+            s.HP = _HP;
+        }
+    }
+
+    function gainExperience(uint _shipId, uint _experience) onlySpaceBattle {
+        require(ownerOf(_shipId) != address(0));
+
+        Spaceship storage s = spaceships[_shipId];
+
+        uint currentExperience = s.experience;
+        if(currentExperience + _experience > s.level * 100){
+            s.level++;
+            s.experience = 0;
+        } else {
+            s.experience += _experience;
+        }
+    }
+
+    function getAttributes(uint _shipId) public view returns (
+        uint HP,
+        uint8 attack,
+        uint8 defense,
+        uint8 speed,
+        uint experience,
+        uint8 level,
+        uint cooldown
+    ){
+        Spaceship storage s = spaceships[_shipId];
+        
+        HP = s.HP;
+        attack = s.attack;
+        defense = s.defense;
+        speed = s.speed;
+        experience = s.experience;
+        level = s.level;
+        cooldown = s.cooldown;
+    }
 }

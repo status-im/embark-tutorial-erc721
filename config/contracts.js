@@ -40,10 +40,14 @@ module.exports = {
 
       "SpaceshipToken": {},
       "SpaceshipMarketPlace": {
-        args:["$SpaceshipToken"]
+        "args": ["$SpaceshipToken"]
       },
-      "SpaceBattle": {},
-
-    }
+      "SpaceBattle": {
+        "args": ["$SpaceshipToken"],
+      }
+    },
+    afterDeploy: [
+      "SpaceshipToken.methods.setSpaceBattleAddress($SpaceBattle).send()"
+    ]
   }
 };
