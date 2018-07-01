@@ -5,6 +5,8 @@ import web3 from "Embark/web3"
 import { Button } from 'react-bootstrap';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import Spinner from 'react-spinkit';
+
+
 class Ship extends Component {
 
     constructor(props){
@@ -85,6 +87,5 @@ class Ship extends Component {
             </div>;
     }
 }
-
 
 export default Ship;

@@ -5,7 +5,7 @@ import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import ShipList from './components/shipList.js';
 import WithdrawBalance from './components/withdrawBalance.js';
 import AddToken from './components/addToken.js';
-import MyShips from './components/myShips.js';
+
 
 class App extends Component {
 

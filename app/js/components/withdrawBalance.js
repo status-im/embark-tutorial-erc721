@@ -38,7 +38,6 @@ class WithdrawBalance extends Component {
 
     this.setState({isSubmitting: true});
 
-
     const toSend = withdrawBalance();
     toSend.estimateGas()
       .then(estimatedGas => {
