@@ -39,7 +39,7 @@ module.exports = {
       "Ownable": { "deploy": false },
       "SpaceshipToken": {
       },
-      "SpaceshipMarketPlace": {
+      "SpaceshipMarketplace": {
         "args": ["$SpaceshipToken"]
       }
     }

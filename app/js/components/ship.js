@@ -2,8 +2,9 @@ import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import EmbarkJS from 'Embark/EmbarkJS';
 import web3 from "Embark/web3"
-import { Button } from 'react-bootstrap';
+import { Button, FormControl, InputGroup } from 'react-bootstrap';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
+import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 import Spinner from 'react-spinkit';
 
 
@@ -13,8 +14,15 @@ class Ship extends Component {
         super(props);
         this.state = {
             image: '',
-            isSubmitting: false
+            isSubmitting: false,
+            showSellForm: false,
+            sellPrice: ''
         }
+    }
+    
+    handleChange(fieldName, value) {
+        this.state[fieldName] = value;
+        this.setState(this.state);
     }
 
     componentDidMount(){
@@ -32,7 +40,16 @@ class Ship extends Component {
             });
     }
 
-    handleClick = () => {
+    showSellForm = (show) => {
+        this.setState({'showSellForm': show});
+    }
+
+    sellShip = () => {
+        this.setState({isSubmitting: true});
+        this.props.onAction();
+    }
+
+    buyShip = () => {
         const { buySpaceship } = SpaceshipToken.methods;
         const toSend = buySpaceship(this.props.id)
 
@@ -47,17 +64,14 @@ class Ship extends Component {
             .then(receipt => {
                 console.log(receipt);
 
-                this.props.onBuy();
+                this.props.onAction();
 
                 // TODO: show success
-                // TODO: hide ship
-
                 return true;
             })
             .catch((err) => {
                 console.error(err);
                 // TODO: show error blockchain
-                
             })
             .finally(() => {
                 this.setState({isSubmitting: false});
@@ -66,7 +80,7 @@ class Ship extends Component {
 
     render(){
         const { energy, lasers, shield, price, wallet } = this.props;
-        const { image, isSubmitting } = this.state;
+        const { image, isSubmitting, showSellForm } = this.state;
         
         const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
 
@@ -80,9 +94,26 @@ class Ship extends Component {
                 <li>Escudo: {shield}</li>
             </ul>
             { !wallet 
-                ? <Button bsStyle="success" onClick={this.handleClick}>Comprar</Button> 
-                : <Button bsStyle="success" onClick={this.handleClick}>Vender</Button>
+                ? <Button disabled={isSubmitting} bsStyle="success" onClick={this.buyShip}>Comprar</Button> 
+                : (!showSellForm 
+                    ? <Button bsStyle="success" onClick={e => { this.showSellForm(true) }}>Vender</Button>
+                    : '')
              }
+
+            { showSellForm
+                ? <Fragment>
+                    <InputGroup>
+                        <FormControl
+                            type="text"
+                            value={this.state.sellPrice}
+                            onChange={(e) => this.handleChange('sellPrice', e.target.value)} />
+                            <InputGroup.Addon>Ξ</InputGroup.Addon>
+                    </InputGroup>
+                    <Button disabled={isSubmitting} bsStyle="success" onClick={this.sellShip}>Vender</Button>
+                    <Button disabled={isSubmitting} onClick={e => { this.showSellForm(false) }}>Cancelar</Button>
+                </Fragment> : ''
+            }
+
              { isSubmitting ? <Spinner name="ball-pulse-sync" color="green"/> : '' }
             </div>;
     }

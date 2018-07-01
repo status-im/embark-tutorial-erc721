@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 
 import "./SpaceshipToken.sol";
 
-contract SpaceshipMarketPlace {
+contract SpaceshipMarketplace {
 
     struct Sale {
         uint spaceshipId;

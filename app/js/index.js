@@ -94,8 +94,8 @@ class App extends Component {
                     <AddToken loadShipsForSale={this._loadShipsForSale} />
                 </div> : '' 
             }
-            <ShipList title="Mis Naves" id="myShips" list={myShips} wallet={true}  />
-            <ShipList title="Tienda" id="shipyard" list={shipsForSale} onBuy={(e) => this._loadEverything()} />
+            <ShipList title="Mis Naves" id="myShips" list={myShips} onAction={(e) => this._loadEverything()} wallet={true}  />
+            <ShipList title="Tienda" id="shipyard" list={shipsForSale} onAction={(e) => this._loadEverything()} />
         </Fragment>);
     }
 }
