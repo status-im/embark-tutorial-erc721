@@ -1,18 +1,51 @@
 import EmbarkJS from 'Embark/EmbarkJS';
-
-// import your contracts
-// e.g if you have a contract named SimpleStorage:
-//import SimpleStorage from 'Embark/contracts/SimpleStorage';
-
-import React from 'react';
+import React, { Fragment, Component } from 'react';
 import ReactDOM from 'react-dom';
+import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
+import Shipyard from './components/shipyard.js';
+import WithdrawBalance from './components/withdrawBalance.js';
+import AddToken from './components/addToken.js';
+import MyShips from './components/myShips.js';
 
-class App extends React.Component {
+class App extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isOwner: false,
+        }
+    }
+
+    componentDidMount(){
+        EmbarkJS.onReady((err) => {
+            this._isOwner();
+        });
+    }
+
+    _isOwner(){
+        SpaceshipToken.methods.owner()
+            .call()
+            .then(owner => {
+                this.setState({isOwner: owner == web3.eth.defaultAccount});
+                return true;
+            });
+    }
 
     render(){
-        return <div>
-            Hola Mundo
-            </div>;
+        const { isOwner } = this.state;
+
+        return (
+        <Fragment>
+            <MyShips />
+            <Shipyard />
+            { isOwner ? 
+                <Fragment>
+                    <WithdrawBalance />
+                    <AddToken />
+                </Fragment> : '' 
+            }
+            
+        </Fragment>);
     }
 }
 

@@ -1,0 +1,101 @@
+body {
+    background: url('../images/background.jpg') top center;
+    color: #ffffff;
+    padding: 20px;
+}
+
+h1.title {
+    font-family: 'VT323', monospace;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 5em;
+}
+
+#myShips, #shipyard {
+    float: left;
+    clear: both;
+    margin-bottom: 1em;
+}
+
+#myShips h3,
+#shipyard h3 {
+    font-family: 'VT323', monospace;
+}
+
+.ship { 
+    float: left;
+    display: block;
+    width: 150px;
+    margin-right: 15px;
+    padding: 20px;
+    margin-bottom: 10px;
+    text-align: center;
+    position: relative;
+}
+
+.ship:hover {
+  border-color: rgba(126, 239, 104, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(126, 239, 104, 0.6);
+  outline: 0 none;
+}
+
+.ship ul {
+    margin: 0;
+    padding: 0;
+    border-top: 5px solid #333;
+    margin-top: 80px;
+    font-size: .8em;
+    padding-top: 10px;
+}
+
+.ship li {
+    margin: 0; 
+    padding: 0;
+    list-style: none;
+}
+
+.ship img {
+    width: 100px;
+    height: 100px;
+    animation: MoveUpDown 2s linear infinite;
+    position: absolute;
+    left: 25px;
+}
+
+.ship button {
+    margin-top: 10px;
+    font-size: 1em;
+    text-transform: uppercase;
+    font-family: 'VT323', monospace;
+    visibility: hidden;
+}
+
+.ship:hover button {
+    visibility: visible;
+}
+
+.ship span.price {
+    position: absolute;
+    background: rgb(38, 121, 21);
+    border-radius: 10px;
+    padding: 5px;
+    top: -5px;
+    right: 0px;
+    z-index: 100;
+}
+
+@keyframes MoveUpDown {
+    0%, 100% {
+      top: 0;
+    }
+    50% {
+      top: 7px;
+    }
+  }
+
+input[type=text] {
+    background: none;
+    border: 1px solid #555;
+    color: #fff;
+}

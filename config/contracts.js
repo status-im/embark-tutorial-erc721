@@ -37,17 +37,11 @@ module.exports = {
       "ERC721Token": { "deploy": false },
       "ERC721BasicToken": { "deploy": false },
       "Ownable": { "deploy": false },
-
-      "SpaceshipToken": {},
+      "SpaceshipToken": {
+      },
       "SpaceshipMarketPlace": {
         "args": ["$SpaceshipToken"]
-      },
-      "SpaceBattle": {
-        "args": ["$SpaceshipToken"],
       }
-    },
-    afterDeploy: [
-      "SpaceshipToken.methods.setSpaceBattleAddress($SpaceBattle).send()"
-    ]
+    }
   }
 };
