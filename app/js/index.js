@@ -13,6 +13,7 @@ class App extends Component {
         super(props);
         this.state = {
             isOwner: false,
+            hidePanel: false
         }
     }
 
@@ -32,19 +33,19 @@ class App extends Component {
     }
 
     render(){
-        const { isOwner } = this.state;
+        const { isOwner, hidePanel } = this.state;
 
         return (
         <Fragment>
-            <MyShips />
-            <Shipyard />
-            { isOwner ? 
-                <Fragment>
+            { isOwner && !hidePanel ? 
+                <div id="management">
+                    <span className="close" onClick={ (e) => this.setState({'hidePanel': true})}>cerrar</span>
                     <WithdrawBalance />
                     <AddToken />
-                </Fragment> : '' 
+                </div> : '' 
             }
-            
+            <MyShips />
+            <Shipyard />
         </Fragment>);
     }
 }

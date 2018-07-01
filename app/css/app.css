@@ -94,8 +94,30 @@ h1.title {
     }
   }
 
-input[type=text] {
-    background: none;
-    border: 1px solid #555;
-    color: #fff;
+
+#management {
+    background: #fdfdfd;
+    color: #333;
+    float: left;
+    width: 100%;
+    clear: both;
+    padding-top: 20px;
+    opacity: 0.7;
+    
+}
+
+#management span.close {
+    float: right;
+    margin-right: 20px;
+    font-size: 15px;
+    color: #000;
+    font-weight: bold;
+}
+
+#management b {
+    margin-right: 10px;
+}
+
+#management div.row {
+    margin-bottom: 1em;
 }
