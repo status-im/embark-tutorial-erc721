@@ -40,8 +40,13 @@ class Ship extends Component {
             })
             .then(receipt => {
                 console.log(receipt);
+
+                this.props.onBuy();
+
                 // TODO: show success
                 // TODO: hide ship
+
+                return true;
             })
             .catch((err) => {
                 console.error(err);

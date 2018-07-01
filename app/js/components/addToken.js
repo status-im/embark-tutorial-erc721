@@ -70,6 +70,8 @@ class AddToken extends Component {
           price: ''
         });
 
+        this.props.loadShipsForSale();
+
         // TODO: show success
       })
       .catch((err) => {
