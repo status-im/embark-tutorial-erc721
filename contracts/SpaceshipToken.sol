@@ -28,13 +28,6 @@ contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
     uint[] public shipsForSale;
     mapping(uint => uint) indexes; // shipId => shipForSale
 
-    function transferSelfOwnedToken(address _to, uint _tokenId) private {
-        clearApproval(address(this), _tokenId);
-        removeTokenFrom(address(this), _tokenId);
-        addTokenTo(_to, _tokenId);
-        emit Transfer(msg.sender, _to, _tokenId);
-    }
-
     function mint(bytes _metadataHash,
                   uint8 _energy, 
                   uint8 _lasers, 
@@ -73,8 +66,10 @@ contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
         // Se debe enviar al menos el precio de la nave
         require(msg.value != 0);
 
-        // Transferimos la nave
-        transferSelfOwnedToken(msg.sender, _spaceshipId);
+        // Transferimos la 
+        // Approbamos directamente para evitar tener que crear una transaccion extra
+        tokenApprovals[_spaceshipId] = msg.sender;
+        safeTransferFrom(address(this), msg.sender, _spaceshipId);
 
         // La eliminamos de la lista para venta
         uint256 replacer = shipsForSale[shipsForSale.length - 1];
