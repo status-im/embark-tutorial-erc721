@@ -3,7 +3,8 @@ import React, { Fragment, Component } from 'react';
 import ReactDOM from 'react-dom';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import { Form, FormGroup, FormControl, InputGroup, Button, Grid, Row, Col, ControlLabel} from 'react-bootstrap';
- 
+import Spinner from 'react-spinkit';
+
 const emptyState = {
   fileToUpload: '',
   HP: '',
@@ -20,6 +21,7 @@ class AddToken extends Component {
     super(props);
 
     this.state = {
+      isSubmitting: false,
       fileToUpload: [],
       energy: '',
       lasers: '',
@@ -37,6 +39,8 @@ class AddToken extends Component {
     e.preventDefault();
 
     const { mint } = SpaceshipToken.methods;
+
+    this.setState({isSubmitting: true});
 
     // TODO:
     let attributes = {
@@ -79,10 +83,16 @@ class AddToken extends Component {
         // TODO: show error blockchain
         
       })
+      .finally(() => {
+        this.setState({isSubmitting: false});
+      })
     })
     .catch((err) => {
       // TODO: show error uploading file
       console.error(err);
+    })
+    .finally(() => {
+      this.setState({isSubmitting: false});
     })
   }
 
@@ -130,8 +140,11 @@ class AddToken extends Component {
                 </Col>
               </Row>
               <Row>
-                <Col sm={2} md={2}>
-                  <Button onClick={(e) => this.handleClick(e)}>Crear</Button>
+                <Col sm={1} md={1}>
+                  <Button disabled={this.state.isSubmitting} onClick={(e) => this.handleClick(e)}>Crear</Button>
+                </Col>
+                <Col sm={1} md={1}>
+                  { this.state.isSubmitting ? <Spinner name="wave" color="coral"/> : '' }
                 </Col>
               </Row>
             </FormGroup>

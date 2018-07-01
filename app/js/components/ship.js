@@ -4,13 +4,14 @@ import EmbarkJS from 'Embark/EmbarkJS';
 import web3 from "Embark/web3"
 import { Button } from 'react-bootstrap';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
-window.SpaceshipToken = SpaceshipToken;
+import Spinner from 'react-spinkit';
 class Ship extends Component {
 
     constructor(props){
         super(props);
         this.state = {
-            image: ''
+            image: '',
+            isSubmitting: false
         }
     }
 
@@ -32,6 +33,9 @@ class Ship extends Component {
     handleClick = () => {
         const { buySpaceship } = SpaceshipToken.methods;
         const toSend = buySpaceship(this.props.id)
+
+        this.setState({isSubmitting: true});
+
         toSend.estimateGas({value: this.props.price })
             .then(estimatedGas => {
                 return toSend.send({from: web3.eth.defaultAccount,
@@ -52,12 +56,15 @@ class Ship extends Component {
                 console.error(err);
                 // TODO: show error blockchain
                 
+            })
+            .finally(() => {
+                this.setState({isSubmitting: false});
             });
     }
 
     render(){
         const { energy, lasers, shield, price, wallet } = this.props;
-        const { image } = this.state;
+        const { image, isSubmitting } = this.state;
         
         const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
 
@@ -74,6 +81,7 @@ class Ship extends Component {
                 ? <Button bsStyle="success" onClick={this.handleClick}>Comprar</Button> 
                 : <Button bsStyle="success" onClick={this.handleClick}>Vender</Button>
              }
+             { isSubmitting ? <Spinner name="ball-pulse-sync" color="green"/> : '' }
             </div>;
     }
 }
