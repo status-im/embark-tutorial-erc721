@@ -68,6 +68,8 @@ class AddToken extends Component {
         this.props.loadShipsForSale();
 
         // TODO: show success
+
+        return true;
       })
       .catch((err) => {
         console.error(err);

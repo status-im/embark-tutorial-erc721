@@ -63,7 +63,7 @@ class Ship extends Component {
             })
             .then(receipt => {
                 console.log(receipt);
-
+                
                 this.props.onAction();
 
                 // TODO: show success
@@ -79,7 +79,7 @@ class Ship extends Component {
     }
 
     render(){
-        const { energy, lasers, shield, price, wallet } = this.props;
+        const { energy, lasers, shield, price, wallet, salesEnabled } = this.props;
         const { image, isSubmitting, showSellForm } = this.state;
         
         const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
@@ -95,7 +95,7 @@ class Ship extends Component {
             </ul>
             { !wallet 
                 ? <Button disabled={isSubmitting} bsStyle="success" onClick={this.buyShip}>Comprar</Button> 
-                : (!showSellForm 
+                : (!showSellForm && salesEnabled
                     ? <Button bsStyle="success" onClick={e => { this.showSellForm(true) }}>Vender</Button>
                     : '')
              }

@@ -11,7 +11,8 @@ class ShipList extends Component {
   constructor(props){
     super(props);
     this.state = {
-      isSubmitting: false
+      isSubmitting: false,
+      salesEnabled: false
     }
   }
 
@@ -30,7 +31,7 @@ enableMarketplace = () => {
     const { setApprovalForAll } = SpaceshipToken.methods;
 
     this.setState({isSubmitting: true});
-
+console.log(SpaceshipMarketplace);
     const toSend = setApprovalForAll(SpaceshipMarketplace.options.address, !this.state.salesEnabled);
 
     toSend.estimateGas()
@@ -54,9 +55,12 @@ enableMarketplace = () => {
 
   render = () => {
     const { list, title, id, wallet, onAction } = this.props;
+    const { salesEnabled } = this.state;
+
     return <div id={id}>
-      <h3>{title}</h3> { wallet ? <EnableSales isSubmitting={this.state.isSubmitting} handleChange={this.enableMarketplace} salesEnabled={this.state.salesEnabled} /> : ''}
-      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} key={i} {...ship} />) }
+      <h3>{title}</h3> 
+      { wallet ? <EnableSales isSubmitting={this.state.isSubmitting} handleChange={this.enableMarketplace} salesEnabled={this.state.salesEnabled} /> : ''}
+      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={i} {...ship} />) }
       </div>;
   }
 

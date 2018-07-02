@@ -72,8 +72,13 @@ h1.title {
     visibility: hidden;
 }
 
-.ship:hover button {
+.ship:hover button,
+.ship:hover .input-group {
     visibility: visible;
+}
+
+.ship .input-group {
+  visibility: hidden;
 }
 
 .ship span.price {
@@ -127,6 +132,13 @@ h1.title {
     width: 100%;
     float: left;
     clear: both;
+}
+
+#enableSales {
+  float: left;
+  clear: both;
+  display: block;
+  width: 100%;
 }
 
 #enableSales span {

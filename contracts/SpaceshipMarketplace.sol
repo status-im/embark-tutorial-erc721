@@ -1,10 +1,10 @@
 pragma solidity 0.4.24;
 
 import "./SpaceshipToken.sol";
-import "zeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol";
+import "zeppelin-solidity/contracts/token/ERC721/ERC721Holder.sol";
 
 
-contract SpaceshipMarketplace is ERC721Receiver {
+contract SpaceshipMarketplace is ERC721Holder {
 
     // Esta estructura guarda informacion sobre las ventas
     struct Sale {
@@ -23,7 +23,7 @@ contract SpaceshipMarketplace is ERC721Receiver {
     event ShipSold(uint indexed spaceshipId, uint price, address indexed oldOwner, address indexed newOwner);
 
 
-    constructor(SpaceshipToken _token) public{
+    constructor(SpaceshipToken _token) public {
         token = _token;
     }
 
