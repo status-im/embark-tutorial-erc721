@@ -21,8 +21,6 @@ contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
     // Todas las naves que se han creado.
     Spaceship[] public spaceships;
 
-    event LevelUp(uint spaceshipId, uint level);
-
     // Precio de las naves
     mapping(uint => uint) public spaceshipPrices;
     uint[] public shipsForSale;

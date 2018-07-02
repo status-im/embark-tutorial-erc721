@@ -1,9 +1,12 @@
 pragma solidity 0.4.24;
 
 import "./SpaceshipToken.sol";
+import "zeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol";
 
-contract SpaceshipMarketplace {
 
+contract SpaceshipMarketplace is ERC721Receiver {
+
+    // Esta estructura guarda informacion sobre las ventas
     struct Sale {
         uint spaceshipId;
         uint price;
@@ -13,32 +16,37 @@ contract SpaceshipMarketplace {
     SpaceshipToken token;
 
     Sale[] public sales;
+
     mapping(uint => uint) spaceshipToSale;
 
     event NewSale(uint indexed spaceshipId, uint price, uint saleId);
+    event ShipSold(uint indexed spaceshipId, uint price, address indexed oldOwner, address indexed newOwner);
+
 
     constructor(SpaceshipToken _token) public{
         token = _token;
     }
 
     function buy(uint _saleId) payable {
-        require(sales[_saleId].owner == msg.sender);
-        require(msg.value >= sales[_saleId].price);
+        Sale storage s = sales[_saleId];
 
-        uint price = sales[_saleId].price;
+        require(s.owner == msg.sender);
+        require(msg.value >= s.price);
         
-        uint refund = msg.value - price;
+        uint refund = msg.value - s.price;
         if(refund > 0)
             msg.sender.transfer(refund);
 
         // Transferimos el ether de la venta
-        sales[_saleId].owner.transfer(price);
+        s.owner.transfer(s.price);
+
+        emit ShipSold(s.spaceshipId, s.price, s.owner, msg.sender);
 
         // Transferimos el token
-        token.safeTransferFrom(address(this), msg.sender, sales[_saleId].spaceshipId);
+        token.safeTransferFrom(address(this), msg.sender, s.spaceshipId);
 
         // Eliminamos la venta
-        delete spaceshipToSale[sales[_saleId].spaceshipId];
+        delete spaceshipToSale[s.spaceshipId];
         delete sales[_saleId];
     }
 
@@ -46,6 +54,7 @@ contract SpaceshipMarketplace {
         // Solo se pueden vender tus propias naves
         require(token.ownerOf(_spaceshipId) == msg.sender);
 
+        // Transferimos el token a este contrato escrow
         token.safeTransferFrom(msg.sender, address(this), _spaceshipId);
 
         Sale memory s = Sale({
