@@ -103,21 +103,21 @@ class AddToken extends Component {
             <FormGroup>
               <Row>
                 <Col sm={2} md={2}>
-                  <ControlLabel>Energ&iacute;a</ControlLabel>                  
+                  <ControlLabel><i className="fa fa-dashboard" aria-hidden="true"></i> Energ&iacute;a</ControlLabel>                  
                   <FormControl
                     type="text"
                     value={this.state.energy}
                     onChange={(e) => this.handleChange('energy', e.target.value)} />
                 </Col>
                 <Col sm={2} md={2}>
-                  <ControlLabel>Lasers</ControlLabel>                  
+                  <ControlLabel><i className="fa fa-rocket" aria-hidden="true"></i> Lasers</ControlLabel>                  
                   <FormControl
                     type="text"
                     value={this.state.lasers}
                     onChange={(e) => this.handleChange('lasers', e.target.value)} />
                 </Col>
                 <Col sm={2} md={2}>
-                  <ControlLabel>Escudo</ControlLabel>                  
+                  <ControlLabel><i className="fa fa-shield" aria-hidden="true"></i> Escudo</ControlLabel>                  
                   <FormControl
                     type="text"
                     value={this.state.shield}

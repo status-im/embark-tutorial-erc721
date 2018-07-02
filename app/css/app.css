@@ -51,9 +51,23 @@ h1.title {
 }
 
 .ship li {
-    margin: 0; 
-    padding: 0;
-    list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 33%;
+  float: left;
+  display: block;
+  font-size: 1.5em;
+  text-align: center;
+  font-family: 'VT323', monospace;
+}
+
+.ship li i {
+  width: 100%;
+  float: left;
+  clear: both;
+  margin-bottom: 4px;
+  color: rgb(255, 99, 71);
 }
 
 .ship img {

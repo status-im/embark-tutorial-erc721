@@ -147,9 +147,9 @@ class Ship extends Component {
             <img src={image} />
             <br />
             <ul>
-                <li>Energia: {energy}</li>
-                <li>Lasers: {lasers}</li>
-                <li>Escudo: {shield}</li>
+                <li title="Energia"><i className="fa fa-dashboard" aria-hidden="true"></i> {energy}</li>
+                <li title="Lasers"><i className="fa fa-crosshairs" aria-hidden="true"></i> {lasers}</li>
+                <li title="Escudo"><i className="fa fa-shield" aria-hidden="true"></i> {shield}</li>
             </ul>
             { !wallet || marketplace
                 ? <Button disabled={isSubmitting} bsStyle="success" onClick={marketplace ? this.buyFromMarket : this.buyFromStore}>Comprar</Button> 
