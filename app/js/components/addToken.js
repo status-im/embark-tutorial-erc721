@@ -5,15 +5,6 @@ import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import { Form, FormGroup, FormControl, InputGroup, Button, Grid, Row, Col, ControlLabel} from 'react-bootstrap';
 import Spinner from 'react-spinkit';
 
-const emptyState = {
-  fileToUpload: '',
-  HP: '',
-  attack: '',
-  defense: '',
-  speed: '',
-  cooldown: '',
-  price: ''
-}
 
 class AddToken extends Component {
 
@@ -85,7 +76,7 @@ class AddToken extends Component {
       })
       .finally(() => {
         this.setState({isSubmitting: false});
-      })
+      });
     })
     .catch((err) => {
       // TODO: show error uploading file

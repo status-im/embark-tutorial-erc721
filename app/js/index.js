@@ -5,7 +5,7 @@ import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import ShipList from './components/shipList.js';
 import WithdrawBalance from './components/withdrawBalance.js';
 import AddToken from './components/addToken.js';
-
+import MarketPlace from './components/marketplace.js';
 
 class App extends Component {
 
@@ -95,6 +95,7 @@ class App extends Component {
                 </div> : '' 
             }
             <ShipList title="Mis Naves" id="myShips" list={myShips} onAction={(e) => this._loadEverything()} wallet={true}  />
+            <MarketPlace />
             <ShipList title="Tienda" id="shipyard" list={shipsForSale} onAction={(e) => this._loadEverything()} />
         </Fragment>);
     }
