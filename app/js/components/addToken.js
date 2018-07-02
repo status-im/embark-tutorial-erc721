@@ -42,15 +42,6 @@ class AddToken extends Component {
         "shield": this.state.shield
       }
     }
-    
-
-
-
-
-
-
-
-
 
     // Cargamos la imagen a IPFS
     EmbarkJS.Storage.uploadFile(this.state.fileToUpload)

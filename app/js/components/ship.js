@@ -33,10 +33,17 @@ class Ship extends Component {
     }
 
     _loadAttributes(){
+        // Cargar los atributos involucra leer la metadata
         EmbarkJS.Storage.get(web3.utils.toAscii(this.props.metadataHash))
             .then(content => {
                 const jsonMetadata = JSON.parse(content);
-                let _url = EmbarkJS.Storage.getUrl(jsonMetadata.imageHash);
+
+                // Podemos usar este metodo
+                const _url = EmbarkJS.Storage.getUrl(jsonMetadata.imageHash);
+
+                // o leer el url que grabamos en la metadata
+                // const _url = jsonMetadata.image
+
                 this.setState({image: _url})
             });
     }
@@ -137,7 +144,6 @@ class Ship extends Component {
 
     render(){
         const { energy, lasers, shield, price, wallet, salesEnabled, marketplace } = this.props;
-        
         const { image, isSubmitting, showSellForm } = this.state;
         
         const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';

@@ -29,12 +29,15 @@ class App extends Component {
     }
 
     _loadEverything(){
+        // Cargamos todas las naves que estan a la venta, que estan en mi wallet y en el mercado
+
         this._loadShipsForSale();
         this._loadMyShips();
         this._loadMarketPlace();
     }
 
     _isOwner(){
+        // Nos interesa saber si somos el dueno del contrato para mostrar el formulario de tokens
         SpaceshipToken.methods.owner()
             .call()
             .then(owner => {

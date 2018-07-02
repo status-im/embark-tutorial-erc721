@@ -18,6 +18,7 @@ class ShipList extends Component {
 
   componentDidMount(){
     EmbarkJS.onReady((err) => {
+        // Al cargar la lista de naves, determinamos si estan aprobadas para la venta
         const { isApprovedForAll } = SpaceshipToken.methods;
         isApprovedForAll(web3.eth.defaultAccount, SpaceshipMarketplace.options.address)
             .call()
@@ -25,9 +26,9 @@ class ShipList extends Component {
                 this.setState({salesEnabled: isApproved});
             });
     });
-}
+  }
 
-enableMarketplace = () => {
+  enableMarketplace = () => {
     const { setApprovalForAll } = SpaceshipToken.methods;
 
     this.setState({isSubmitting: true});
@@ -51,7 +52,7 @@ enableMarketplace = () => {
         .finally(() => {
           this.setState({isSubmitting: false});
         });
-}
+  }
 
   render = () => {
     const { list, title, id, wallet, onAction, marketplace } = this.props;
@@ -61,12 +62,10 @@ enableMarketplace = () => {
       <h3>{title}</h3> 
       { wallet ? <EnableSales isSubmitting={this.state.isSubmitting} handleChange={this.enableMarketplace} salesEnabled={this.state.salesEnabled} /> : ''}
       { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={i} marketplace={marketplace} {...ship} />) }
-      
       { list.length == 0 
         ? <p>No hay naves disponibles</p> 
         : ''
       }
-
       </div>;
   }
 
