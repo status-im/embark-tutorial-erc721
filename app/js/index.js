@@ -2,6 +2,7 @@ import EmbarkJS from 'Embark/EmbarkJS';
 import React, { Fragment, Component } from 'react';
 import ReactDOM from 'react-dom';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
+import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 import ShipList from './components/shipList.js';
 import WithdrawBalance from './components/withdrawBalance.js';
 import AddToken from './components/addToken.js';
@@ -15,7 +16,8 @@ class App extends Component {
             isOwner: false,
             hidePanel: false,
             shipsForSale: [],
-            myShips: []
+            myShips: [],
+            marketPlaceShips: []
         }
     }
 
@@ -29,6 +31,7 @@ class App extends Component {
     _loadEverything(){
         this._loadShipsForSale();
         this._loadMyShips();
+        this._loadMarketPlace();
     }
 
     _isOwner(){
@@ -38,6 +41,30 @@ class App extends Component {
                 this.setState({isOwner: owner == web3.eth.defaultAccount});
                 return true;
             });
+    }
+
+    _loadMarketPlace = async () => {
+        const { nSale, sales, saleInformation } = SpaceshipMarketplace.methods;
+        const { spaceships } = SpaceshipToken.methods;
+   
+        const total = await nSale().call();
+        const list = [];
+        if(total){
+          for (let i = total-1; i >= 0; i--) {
+            const sale = await sales(i).call();
+            const _info = await spaceships(sale.spaceshipId).call();
+            const ship = {
+              owner: sale.owner,
+              price: sale.price,
+              id: sale.spaceshipId,
+              ..._info
+            };
+          
+            list.push(ship);
+          }
+        }
+        console.log(list);
+        this.setState({marketPlaceShips: list.reverse()});
     }
 
     _loadShipsForSale = async () => {
@@ -83,7 +110,7 @@ class App extends Component {
       }
 
     render(){
-        const { isOwner, hidePanel, shipsForSale, myShips } = this.state;
+        const { isOwner, hidePanel, shipsForSale, myShips, marketPlaceShips } = this.state;
 
         return (
         <Fragment>
@@ -95,7 +122,7 @@ class App extends Component {
                 </div> : '' 
             }
             <ShipList title="Mis Naves" id="myShips" list={myShips} onAction={(e) => this._loadEverything()} wallet={true}  />
-            <MarketPlace />
+            <MarketPlace list={marketPlaceShips} onAction={(e) => this._loadEverything()} />
             <ShipList title="Tienda" id="shipyard" list={shipsForSale} onAction={(e) => this._loadEverything()} />
         </Fragment>);
     }

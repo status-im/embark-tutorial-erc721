@@ -7,7 +7,7 @@ const EnableSales = (props) => {
 
     return <label id="enableSales">
             <Toggle
-                checked={salesEnabled === true ? true : false }
+                checked={salesEnabled }
                 onChange={handleChange}
                 disabled={isSubmitting}
                 />

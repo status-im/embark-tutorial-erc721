@@ -31,7 +31,7 @@ enableMarketplace = () => {
     const { setApprovalForAll } = SpaceshipToken.methods;
 
     this.setState({isSubmitting: true});
-console.log(SpaceshipMarketplace);
+
     const toSend = setApprovalForAll(SpaceshipMarketplace.options.address, !this.state.salesEnabled);
 
     toSend.estimateGas()

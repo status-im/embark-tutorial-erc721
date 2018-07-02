@@ -17,11 +17,14 @@ class WithdrawBalance extends Component {
 
   componentDidMount(){
     EmbarkJS.onReady((err) => {
+      // Al cargar el componente, obtenemos el balance
       this._getBalance();
     });
   }
 
   _getBalance(){
+
+    // Se consulta el balance del contrato
     web3.eth.getBalance(SpaceshipToken.options.address)
       .then(newBalance => {
         this.setState({
@@ -38,9 +41,13 @@ class WithdrawBalance extends Component {
 
     this.setState({isSubmitting: true});
 
+    // Retiramos el balance total del contrato
+    // Estimamos primero el gas para saber cuanto gas enviar
+    
     const toSend = withdrawBalance();
     toSend.estimateGas()
       .then(estimatedGas => {
+          // Es una buena practica mandar siempre algo mas del gas estimado
           return toSend.send({from: web3.eth.defaultAccount,
                               gas: estimatedGas + 1000});
       })

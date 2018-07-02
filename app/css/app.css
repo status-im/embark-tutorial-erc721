@@ -1,5 +1,5 @@
 body {
-    background: url('../images/background.jpg') top center;
+    background: url('../images/background.jpg') top center fixed;
     color: #ffffff;
     padding: 20px;
 }

@@ -45,8 +45,34 @@ class Ship extends Component {
     }
 
     sellShip = () => {
+        const { forSale } = SpaceshipMarketplace.methods;
+        const { sellPrice } = this.state;
+        const { id } = this.props;
+
         this.setState({isSubmitting: true});
-        this.props.onAction();
+
+        const toSend = forSale(id, web3.utils.toWei(sellPrice, 'ether'))
+
+        toSend.estimateGas()
+            .then(estimatedGas => {
+                return toSend.send({from: web3.eth.defaultAccount,
+                                    gas: estimatedGas + 1000});
+            })
+            .then(receipt => {
+                console.log(receipt);
+                
+                this.props.onAction();
+
+                // TODO: show success
+                return true;
+            })
+            .catch((err) => {
+                console.error(err);
+                // TODO: show error blockchain
+            })
+            .finally(() => {
+                this.setState({isSubmitting: false});
+            });
     }
 
     buyShip = () => {

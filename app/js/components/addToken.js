@@ -36,12 +36,20 @@ class AddToken extends Component {
     // TODO:
     let attributes = {
     }
+
+    // Cargamos la imagen a IPFS
     EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
     .then(fileHash => {
+      // Agregamos los datos a la lista de atributos
       attributes.imageHash = fileHash;
+
+      // Guardamos la lista de atributos
       return EmbarkJS.Storage.saveText(JSON.stringify(attributes))
     })
     .then(attrHash => {
+
+      // El hash que retorna IPFS se almacenara dentro de los datos del token
+      // El precio lo convertimos de ether a wei
       const toSend = mint(web3.utils.toHex(attrHash), 
                           this.state.energy, 
                           this.state.lasers, 
