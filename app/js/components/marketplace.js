@@ -14,7 +14,7 @@ class MarketPlace extends Component {
     render(){
       const {list, onAction} = this.props;
       return <div id="marketplace">
-            <ShipList title="Mercado" id="marketlist" list={list} onAction={onAction} wallet={false} />
+            <ShipList title="Mercado" id="marketlist" list={list} onAction={onAction} wallet={false} marketplace={true} />
         </div>;
     }
   }

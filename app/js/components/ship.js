@@ -6,6 +6,7 @@ import { Button, FormControl, InputGroup } from 'react-bootstrap';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 import Spinner from 'react-spinkit';
+import MarketPlace from './marketplace';
 
 
 class Ship extends Component {
@@ -75,9 +76,39 @@ class Ship extends Component {
             });
     }
 
-    buyShip = () => {
+    buyFromStore = () => {
         const { buySpaceship } = SpaceshipToken.methods;
         const toSend = buySpaceship(this.props.id)
+
+        this.setState({isSubmitting: true});
+
+        toSend.estimateGas({value: this.props.price })
+            .then(estimatedGas => {
+                return toSend.send({from: web3.eth.defaultAccount,
+                                    value: this.props.price,
+                                    gas: estimatedGas + 1000000});
+            })
+            .then(receipt => {
+                console.log(receipt);
+
+                console.log("Updating ships");
+                this.props.onAction();
+
+                // TODO: show success
+                return true;
+            })
+            .catch((err) => {
+                console.error(err);
+                // TODO: show error blockchain
+            })
+            .finally(() => {
+                this.setState({isSubmitting: false});
+            });
+    }
+
+    buyFromMarket = () => {
+        const { buy } = SpaceshipMarketplace.methods;
+        const toSend = buy(this.props.saleId);
 
         this.setState({isSubmitting: true});
 
@@ -105,7 +136,8 @@ class Ship extends Component {
     }
 
     render(){
-        const { energy, lasers, shield, price, wallet, salesEnabled } = this.props;
+        const { energy, lasers, shield, price, wallet, salesEnabled, marketplace } = this.props;
+        
         const { image, isSubmitting, showSellForm } = this.state;
         
         const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
@@ -119,8 +151,8 @@ class Ship extends Component {
                 <li>Lasers: {lasers}</li>
                 <li>Escudo: {shield}</li>
             </ul>
-            { !wallet 
-                ? <Button disabled={isSubmitting} bsStyle="success" onClick={this.buyShip}>Comprar</Button> 
+            { !wallet || marketplace
+                ? <Button disabled={isSubmitting} bsStyle="success" onClick={marketplace ? this.buyFromMarket : this.buyFromStore}>Comprar</Button> 
                 : (!showSellForm && salesEnabled
                     ? <Button bsStyle="success" onClick={e => { this.showSellForm(true) }}>Vender</Button>
                     : '')

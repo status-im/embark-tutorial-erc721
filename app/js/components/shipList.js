@@ -54,13 +54,13 @@ enableMarketplace = () => {
 }
 
   render = () => {
-    const { list, title, id, wallet, onAction } = this.props;
+    const { list, title, id, wallet, onAction, marketplace } = this.props;
     const { salesEnabled } = this.state;
 
     return <div id={id}>
       <h3>{title}</h3> 
       { wallet ? <EnableSales isSubmitting={this.state.isSubmitting} handleChange={this.enableMarketplace} salesEnabled={this.state.salesEnabled} /> : ''}
-      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={i} {...ship} />) }
+      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={i} marketplace={marketplace} {...ship} />) }
       </div>;
   }
 

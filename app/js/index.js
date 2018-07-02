@@ -57,13 +57,14 @@ class App extends Component {
               owner: sale.owner,
               price: sale.price,
               id: sale.spaceshipId,
+              saleId: i,
               ..._info
             };
           
             list.push(ship);
           }
         }
-        console.log(list);
+        
         this.setState({marketPlaceShips: list.reverse()});
     }
 

@@ -30,7 +30,8 @@ contract SpaceshipMarketplace is ERC721Holder {
     function buy(uint _saleId) payable {
         Sale storage s = sales[_saleId];
 
-        require(s.owner == msg.sender);
+        // TODO: descomentar esto para evitar que el dueno compre su propia nave
+        // require(s.owner != msg.sender);
         require(msg.value >= s.price);
         
         uint refund = msg.value - s.price;
@@ -43,11 +44,15 @@ contract SpaceshipMarketplace is ERC721Holder {
         emit ShipSold(s.spaceshipId, s.price, s.owner, msg.sender);
 
         // Transferimos el token
+        token.approve(msg.sender, s.spaceshipId);
         token.safeTransferFrom(address(this), msg.sender, s.spaceshipId);
 
-        // Eliminamos la venta
+        // Eliminamos la venta // TODO: reorder
         delete spaceshipToSale[s.spaceshipId];
-        delete sales[_saleId];
+
+        Sale replacer = sales[sales.length - 1];
+        sales[_saleId] = replacer;
+        sales.length--;
     }
 
     function forSale(uint _spaceshipId, uint _price){
