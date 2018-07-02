@@ -3,7 +3,6 @@ pragma solidity 0.4.24;
 import "zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-
 /**
  @title Contrato base para Mexico Workshop
  @dev En Status tambien hablamos espanol ;)
@@ -96,4 +95,24 @@ contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
         lasers = s.lasers;
         shield = s.shield;
     }
+
+
+    // Obtain metadata
+
+    function tokenURI(uint256 _spaceshipId) public view returns (string) {
+        Spaceship storage s = spaceships[_spaceshipId];
+        return strConcat("https://ipfs.io/ipfs/", string(s.metadataHash));
+    }
+
+    function strConcat(string _a, string _b) private returns (string) {
+        bytes memory _ba = bytes(_a);
+        bytes memory _bb = bytes(_b);
+        string memory ab = new string(_ba.length + _bb.length);
+        bytes memory bab = bytes(ab);
+        uint k = 0;
+        for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
+        return string(bab);
+    }
+
 }

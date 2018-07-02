@@ -61,6 +61,12 @@ enableMarketplace = () => {
       <h3>{title}</h3> 
       { wallet ? <EnableSales isSubmitting={this.state.isSubmitting} handleChange={this.enableMarketplace} salesEnabled={this.state.salesEnabled} /> : ''}
       { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={i} marketplace={marketplace} {...ship} />) }
+      
+      { list.length == 0 
+        ? <p>No hay naves disponibles</p> 
+        : ''
+      }
+
       </div>;
   }
 

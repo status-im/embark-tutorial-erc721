@@ -33,15 +33,31 @@ class AddToken extends Component {
 
     this.setState({isSubmitting: true});
 
-    // TODO:
     let attributes = {
+      "name": "Nave Espacial",
+      "image": "", 
+      "attributes": {
+        "energy": this.state.energy,
+        "lasers": this.state.lasers,
+        "shield": this.state.shield
+      }
     }
+    
+
+
+
+
+
+
+
+
 
     // Cargamos la imagen a IPFS
     EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
     .then(fileHash => {
       // Agregamos los datos a la lista de atributos
       attributes.imageHash = fileHash;
+      attributes.image = 'https://ipfs.io/ipfs/' + fileHash;
 
       // Guardamos la lista de atributos
       return EmbarkJS.Storage.saveText(JSON.stringify(attributes))
