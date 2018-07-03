@@ -29,6 +29,7 @@ module.exports = {
   },
   testnet: {
     enabled: true,
+    proxy: false,
     networkType: "testnet",
     syncMode: "light",
     rpcHost: "localhost",
@@ -40,6 +41,7 @@ module.exports = {
   },
   livenet: {
     enabled: true,
+    proxy: false,
     networkType: "livenet",
     syncMode: "light",
     rpcHost: "localhost",

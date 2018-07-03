@@ -31,5 +31,18 @@ module.exports = {
       port: 5001,
       getUrl: "http://localhost:8080/ipfs/"
     }
+  },
+  testnet: {
+    enabled: true,
+    provider: "ipfs",
+    dappConnection: [
+      {
+        provider: "ipfs",
+        host: "ipfs.infura.io",
+        port: 5001,
+        protocol: "http",
+        getUrl: "http://ipfs.infura.io/ipfs/"
+      }
+    ]
   }
 };
