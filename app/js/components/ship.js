@@ -164,7 +164,7 @@ class Ship extends Component {
                     : '')
              }
 
-            { showSellForm
+            { showSellForm && salesEnabled
                 ? <Fragment>
                     <InputGroup>
                         <FormControl
