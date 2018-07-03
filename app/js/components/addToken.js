@@ -43,6 +43,8 @@ class AddToken extends Component {
       }
     }
 
+    let toSend;
+
     // Cargamos la imagen a IPFS
     EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
     .then(fileHash => {
@@ -57,51 +59,44 @@ class AddToken extends Component {
 
       // El hash que retorna IPFS se almacenara dentro de los datos del token
       // El precio lo convertimos de ether a wei
-      const toSend = mint(web3.utils.toHex(attrHash), 
+      toSend = mint(web3.utils.toHex(attrHash), 
                           this.state.energy, 
                           this.state.lasers, 
                           this.state.shield,
                           web3.utils.toWei(this.state.price, "ether"));
       
-      toSend.estimateGas()
-      .then(estimatedGas => {
-        return toSend.send({from: web3.eth.defaultAccount,
-                            gas: estimatedGas + 1000});
-      })
-      .then(receipt => {
-        console.log(receipt);
+      return toSend.estimateGas();
+    })
+    .then(estimatedGas => {
+      return toSend.send({from: web3.eth.defaultAccount,
+                          gas: estimatedGas + 1000});
+    })
+    .then(receipt => {
+      console.log(receipt);
 
-        // Vaciar formulario
-        this.setState({
-          fileToUpload: [],
-          energy: '',
-          lasers: '',
-          shield: '',
-          price: ''
-        });
-
-        this.props.loadShipsForSale();
-
-        // TODO: show success
-
-        return true;
-      })
-      .catch((err) => {
-        console.error(err);
-        // TODO: show error blockchain
-        
-      })
-      .finally(() => {
-        this.setState({isSubmitting: false});
+      // Vaciar formulario
+      this.setState({
+        fileToUpload: [],
+        energy: '',
+        lasers: '',
+        shield: '',
+        price: ''
       });
+
+      this.props.loadShipsForSale();
+
+      // TODO: show success
+
+      return true;
     })
     .catch((err) => {
-      // TODO: show error uploading file
       console.error(err);
+      // TODO: show error blockchain / ipfs
+      
     })
     .finally(() => {
       this.setState({isSubmitting: false});
-    })
+    });
   }
 
   render(){
@@ -149,10 +144,11 @@ class AddToken extends Component {
               </Row>
               <Row>
                 <Col sm={1} md={1}>
-                  <Button disabled={this.state.isSubmitting} onClick={(e) => this.handleClick(e)}>Crear</Button>
-                </Col>
-                <Col sm={1} md={1}>
-                  { this.state.isSubmitting ? <Spinner name="wave" color="coral"/> : '' }
+                  {
+                    this.state.isSubmitting 
+                    ? <Spinner name="wave" color="coral"/>
+                    : <Button disabled={this.state.isSubmitting} onClick={(e) => this.handleClick(e)}>Crear</Button>
+                  }
                 </Col>
               </Row>
             </FormGroup>

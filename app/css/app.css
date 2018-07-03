@@ -78,7 +78,7 @@ h1.title {
     left: 25px;
 }
 
-.ship button {
+.ship button.hiddenOnLeave {
     margin-top: 10px;
     font-size: 1em;
     text-transform: uppercase;
@@ -86,14 +86,10 @@ h1.title {
     visibility: hidden;
 }
 
-.ship:hover button,
-.ship:hover .input-group {
+.ship:hover button {
     visibility: visible;
 }
 
-.ship .input-group {
-  visibility: hidden;
-}
 
 .ship span.price {
     position: absolute;
@@ -122,7 +118,7 @@ h1.title {
     width: 100%;
     clear: both;
     padding-top: 20px;
-    opacity: 0.7;
+    opacity: 0.85;
     
 }
 

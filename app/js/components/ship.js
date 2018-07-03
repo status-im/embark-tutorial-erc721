@@ -160,7 +160,7 @@ class Ship extends Component {
             { !wallet || marketplace
                 ? <Button disabled={isSubmitting} bsStyle="success" onClick={marketplace ? this.buyFromMarket : this.buyFromStore}>Comprar</Button> 
                 : (!showSellForm && salesEnabled
-                    ? <Button bsStyle="success" onClick={e => { this.showSellForm(true) }}>Vender</Button>
+                    ? <Button bsStyle="success" className="hiddenOnLeave" onClick={e => { this.showSellForm(true) }}>Vender</Button>
                     : '')
              }
 
