@@ -75,7 +75,16 @@ class App extends Component {
         //   metadataHash: "Atributo del token",
         // }
 
-        let list = [];
+        // Ejemplo: 
+        const myShip = {
+            id: 1,
+            price: 0.1,
+            energy: 10,
+            lasers: 5,
+            shield: 7,
+            metadataHash: "METADATA"
+        };
+        const list = [myShip];
         this.setState({shipsForSale: list.reverse()});
     }
 
@@ -94,7 +103,17 @@ class App extends Component {
         //   metadataHash: "Atributo del token",
         // }
         
-        let list = [];
+        // Ejemplo: 
+        const myShip = {
+            id: 1,
+            owner: "0xabc",
+            price: 0.1,
+            energy: 10,
+            lasers: 5,
+            shield: 7,
+            metadataHash: "METADATA"
+        };
+        const list = [myShip];
         this.setState({marketPlaceShips: list.reverse()});
     }
 
