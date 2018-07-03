@@ -17,41 +17,20 @@ class ShipList extends Component {
   }
 
   componentDidMount(){
-    EmbarkJS.onReady((err) => {
-        // Al cargar la lista de naves, determinamos si estan aprobadas para la venta
-        const { isApprovedForAll } = SpaceshipToken.methods;
-        isApprovedForAll(web3.eth.defaultAccount, SpaceshipMarketplace.options.address)
-            .call()
-            .then(isApproved => {
-                this.setState({salesEnabled: isApproved});
-            });
-    });
+    // TODO: nos interesa saber si las ventas estan habilidatas o no para los tokens
+    // El estado que maneja esto es 'salesEnabled'. 
+    // Aqui lo seteamos en true, solo para ver que funcione, pero debe venir del contrato
+    this.setState({salesEnabled: false});
   }
 
   enableMarketplace = () => {
-    const { setApprovalForAll } = SpaceshipToken.methods;
-
+    // TODO: esta funcion la llama el toggle de mas abajo cuando se clickea
+    // Debe setear siempre el valor de 'salesEnabled'
+    // Las siguientes lineas solo muestran el funcionamiento en el UI
+    // pero debe implementarse creando una transaccion
     this.setState({isSubmitting: true});
-
-    const toSend = setApprovalForAll(SpaceshipMarketplace.options.address, !this.state.salesEnabled);
-
-    toSend.estimateGas()
-        .then(estimatedGas => {
-            return toSend.send({from: web3.eth.defaultAccount,
-                                gas: estimatedGas + 1000});
-        })
-        .then(receipt => {
-            this.setState({salesEnabled: !this.state.salesEnabled});
-            console.log(receipt);
-        })
-        .catch((err) => {
-            console.error(err);
-            // TODO: show error blockchain
-            
-        })
-        .finally(() => {
-          this.setState({isSubmitting: false});
-        });
+    this.setState({salesEnabled: !this.state.salesEnabled});
+    this.setState({isSubmitting: false});
   }
 
   render = () => {

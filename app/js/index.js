@@ -1,8 +1,5 @@
-import EmbarkJS from 'Embark/EmbarkJS';
 import React, { Fragment, Component } from 'react';
 import ReactDOM from 'react-dom';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
-import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 import ShipList from './components/shipList.js';
 import WithdrawBalance from './components/withdrawBalance.js';
 import AddToken from './components/addToken.js';
@@ -22,96 +19,84 @@ class App extends Component {
     }
 
     componentDidMount(){
-        EmbarkJS.onReady((err) => {
-            this._isOwner();
-            this._loadEverything();
-        });
+        // TODO: Debemos determinar si la cuenta que estamos usando es la del dueno del token
+        // y cargar tambien las naves
+        this._isOwner();
+        this._loadEverything();
     }
 
     _loadEverything(){
         // Cargamos todas las naves que estan a la venta, que estan en mi wallet y en el mercado
-
         this._loadShipsForSale();
         this._loadMyShips();
         this._loadMarketPlace();
     }
 
     _isOwner(){
-        // Nos interesa saber si somos el dueno del contrato para mostrar el formulario de tokens
-        SpaceshipToken.methods.owner()
-            .call()
-            .then(owner => {
-                this.setState({isOwner: owner == web3.eth.defaultAccount});
-                return true;
-            });
-    }
-
-    _loadMarketPlace = async () => {
-        const { nSale, sales, saleInformation } = SpaceshipMarketplace.methods;
-        const { spaceships } = SpaceshipToken.methods;
-   
-        const total = await nSale().call();
-        const list = [];
-        if(total){
-          for (let i = total-1; i >= 0; i--) {
-            const sale = await sales(i).call();
-            const _info = await spaceships(sale.spaceshipId).call();
-            const ship = {
-              owner: sale.owner,
-              price: sale.price,
-              id: sale.spaceshipId,
-              saleId: i,
-              ..._info
-            };
-          
-            list.push(ship);
-          }
-        }
-        
-        this.setState({marketPlaceShips: list.reverse()});
-    }
-
-    _loadShipsForSale = async () => {
-        const { shipsForSaleN, shipsForSale, spaceshipPrices, spaceships } = SpaceshipToken.methods;
-    
-        const total = await shipsForSaleN().call();
-        const list = [];
-        if(total){
-          for (let i = total-1; i >= 0; i--) {
-            const shipId = await shipsForSale(i).call();
-            const _info = await spaceships(shipId).call();
-            const _price = await spaceshipPrices(shipId).call();
-    
-            const ship = {
-              price: _price,
-              id: shipId,
-              ..._info
-            };
-            list.push(ship);
-          }
-        }
-        this.setState({shipsForSale: list.reverse()});
+        // TODO: Nos interesa saber si somos el dueno del contrato para mostrar el formulario de tokens
+        // Debemos actualizar el estado isOwner con la informacion del contrato
+        this.setState({isOwner: true}); 
     }
 
     _loadMyShips = async () => {
-        const { balanceOf, tokenOfOwnerByIndex, spaceships } = SpaceshipToken.methods;
-    
-        const total = await balanceOf(web3.eth.defaultAccount).call();
-        const list = [];
-        if(total){
-          for (let i = total-1; i >= 0; i--) {
-            const myShipId = await tokenOfOwnerByIndex(web3.eth.defaultAccount, i).call();
-            const _info = await spaceships(myShipId).call();
-    
-            const ship = {
-              id: myShipId,
-              ..._info
-            };
-            list.push(ship);
-          }
-        }
+        // TODO: aqui nos interesa cargar la lista de naves que posee el usuario
+        // se espera un array de objetos en el estado myShips
+        // cada objeto debe tener los siguientes atributos:
+        // {
+        //   id: "id del token",
+        //   energy: "Atributo del token",
+        //   lasers: "Atributo del token",
+        //   shield: "Atributo del token",
+        //   metadataHash: "Atributo del token",
+        // }
+        
+        // Ejemplo: 
+        const myShip = {
+            id: 1,
+            energy: 10,
+            lasers: 5,
+            shield: 7,
+            metadataHash: "METADATA"
+        };
+        const list = [ myShip ];
         this.setState({myShips: list.reverse()});
-      }
+    }
+
+    _loadShipsForSale = async () => {
+        // TODO: aqui nos interesa cargar la lista de naves a la venta cuando generamos el token
+        // se espera un array de objetos en el estado shipsForSale
+        // cada objeto debe tener los siguientes atributos:
+        // {
+        //   price: "precio de venta",
+        //   id: "id del token",
+        //   energy: "Atributo del token",
+        //   lasers: "Atributo del token",
+        //   shield: "Atributo del token",
+        //   metadataHash: "Atributo del token",
+        // }
+
+        let list = [];
+        this.setState({shipsForSale: list.reverse()});
+    }
+
+    _loadMarketPlace = async () => {
+        // TODO: debemos cargar la lista de naves que estan a la venta en el marketplace
+        // se espera un array de objetos en el estado marketPlaceShips
+        // cada objeto debe tener los siguientes atributos:
+        // {
+        //   owner: "dueno de la nave en venta",
+        //   price: "precio de venta",
+        //   id: "id del token",
+        //   saleId: "id de la venta",
+        //   energy: "Atributo del token",
+        //   lasers: "Atributo del token",
+        //   shield: "Atributo del token",
+        //   metadataHash: "Atributo del token",
+        // }
+        
+        let list = [];
+        this.setState({marketPlaceShips: list.reverse()});
+    }
 
     render(){
         const { isOwner, hidePanel, shipsForSale, myShips, marketPlaceShips } = this.state;

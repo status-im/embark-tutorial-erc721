@@ -1,10 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
-import EmbarkJS from 'Embark/EmbarkJS';
-import web3 from "Embark/web3"
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
-import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 import Spinner from 'react-spinkit';
 import MarketPlace from './marketplace';
 
@@ -27,25 +23,17 @@ class Ship extends Component {
     }
 
     componentDidMount(){
-        EmbarkJS.onReady((err) => {
-          this._loadAttributes();
-        });
+        // TODO: cuando se carga el componente se deben buscar los atributos del token
+        this._loadAttributes();
     }
 
     _loadAttributes(){
-        // Cargar los atributos involucra leer la metadata
-        EmbarkJS.Storage.get(web3.utils.toAscii(this.props.metadataHash))
-            .then(content => {
-                const jsonMetadata = JSON.parse(content);
-
-                // Podemos usar este metodo
-                const _url = EmbarkJS.Storage.getUrl(jsonMetadata.imageHash);
-
-                // o leer el url que grabamos en la metadata
-                // const _url = jsonMetadata.image
-
-                this.setState({image: _url})
-            });
+        // TODO: implementar carga de atributos aca
+        // El unico atributo interesante es la imagen
+        // Guardar el url en this.state.image
+        
+        // Ejemplo
+        this.setState({image: "./images/sampleShip.png"});
     }
 
     showSellForm = (show) => {
@@ -53,93 +41,34 @@ class Ship extends Component {
     }
 
     sellShip = () => {
-        const { forSale } = SpaceshipMarketplace.methods;
-        const { sellPrice } = this.state;
-        const { id } = this.props;
-
+        // TODO: vender una nave para que otro usuario la pueda comprar
+        // En props esta el atributo 'id', que podemos usar para determinar el id del token
+        // El precio esta en el estado this.state.sellPrice
+        
         this.setState({isSubmitting: true});
-
-        const toSend = forSale(id, web3.utils.toWei(sellPrice, 'ether'))
-
-        toSend.estimateGas()
-            .then(estimatedGas => {
-                return toSend.send({from: web3.eth.defaultAccount,
-                                    gas: estimatedGas + 1000});
-            })
-            .then(receipt => {
-                console.log(receipt);
-                
-                this.props.onAction();
-
-                // TODO: show success
-                return true;
-            })
-            .catch((err) => {
-                console.error(err);
-                // TODO: show error blockchain
-            })
-            .finally(() => {
-                this.setState({isSubmitting: false});
-            });
+        // Llamar la siguiente funcion para refrescar las listas
+        this.props.onAction();
+        this.setState({isSubmitting: false});
     }
 
     buyFromStore = () => {
-        const { buySpaceship } = SpaceshipToken.methods;
-        const toSend = buySpaceship(this.props.id)
+        // TODO: comprar token recien creado
+        // En props esta el atributo 'id' y 'price', que podemos usar para determinar el id del token
 
         this.setState({isSubmitting: true});
-
-        toSend.estimateGas({value: this.props.price })
-            .then(estimatedGas => {
-                return toSend.send({from: web3.eth.defaultAccount,
-                                    value: this.props.price,
-                                    gas: estimatedGas + 1000000});
-            })
-            .then(receipt => {
-                console.log(receipt);
-
-                console.log("Updating ships");
-                this.props.onAction();
-
-                // TODO: show success
-                return true;
-            })
-            .catch((err) => {
-                console.error(err);
-                // TODO: show error blockchain
-            })
-            .finally(() => {
-                this.setState({isSubmitting: false});
-            });
+        // Llamar la siguiente funcion para refrescar las listas
+        this.props.onAction();
+        this.setState({isSubmitting: false});
     }
 
     buyFromMarket = () => {
-        const { buy } = SpaceshipMarketplace.methods;
-        const toSend = buy(this.props.saleId);
-
+        // TODO: comprar tokens puestos a la venta por otra persona
+        // En props esta el 'saleId' y 'price' para poder comprarlo
+        
         this.setState({isSubmitting: true});
-
-        toSend.estimateGas({value: this.props.price })
-            .then(estimatedGas => {
-                return toSend.send({from: web3.eth.defaultAccount,
-                                    value: this.props.price,
-                                    gas: estimatedGas + 1000000});
-            })
-            .then(receipt => {
-                console.log(receipt);
-                
-                this.props.onAction();
-
-                // TODO: show success
-                return true;
-            })
-            .catch((err) => {
-                console.error(err);
-                // TODO: show error blockchain
-            })
-            .finally(() => {
-                this.setState({isSubmitting: false});
-            });
+        // Llamar la siguiente funcion para refrescar las listas
+        this.props.onAction();
+        this.setState({isSubmitting: false});
     }
 
     render(){
@@ -164,7 +93,7 @@ class Ship extends Component {
                     : '')
              }
 
-            { showSellForm
+            { showSellForm && salesEnabled
                 ? <Fragment>
                     <InputGroup>
                         <FormControl

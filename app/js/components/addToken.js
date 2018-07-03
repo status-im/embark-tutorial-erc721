@@ -1,7 +1,5 @@
-import EmbarkJS from 'Embark/EmbarkJS';
 import React, { Fragment, Component } from 'react';
 import ReactDOM from 'react-dom';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import { Form, FormGroup, FormControl, InputGroup, Button, Grid, Row, Col, ControlLabel} from 'react-bootstrap';
 import Spinner from 'react-spinkit';
 
@@ -29,74 +27,14 @@ class AddToken extends Component {
   handleClick(e){
     e.preventDefault();
 
-    const { mint } = SpaceshipToken.methods;
-
     this.setState({isSubmitting: true});
 
-    let attributes = {
-      "name": "Nave Espacial",
-      "image": "", 
-      "attributes": {
-        "energy": this.state.energy,
-        "lasers": this.state.lasers,
-        "shield": this.state.shield
-      }
-    }
-
-    let toSend;
-
-    // Cargamos la imagen a IPFS
-    EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
-    .then(fileHash => {
-      // Agregamos los datos a la lista de atributos
-      attributes.imageHash = fileHash;
-      attributes.image = 'https://ipfs.io/ipfs/' + fileHash;
-
-      // Guardamos la lista de atributos
-      return EmbarkJS.Storage.saveText(JSON.stringify(attributes))
-    })
-    .then(attrHash => {
-
-      // El hash que retorna IPFS se almacenara dentro de los datos del token
-      // El precio lo convertimos de ether a wei
-      toSend = mint(web3.utils.toHex(attrHash), 
-                          this.state.energy, 
-                          this.state.lasers, 
-                          this.state.shield,
-                          web3.utils.toWei(this.state.price, "ether"));
-      
-      return toSend.estimateGas();
-    })
-    .then(estimatedGas => {
-      return toSend.send({from: web3.eth.defaultAccount,
-                          gas: estimatedGas + 1000});
-    })
-    .then(receipt => {
-      console.log(receipt);
-
-      // Vaciar formulario
-      this.setState({
-        fileToUpload: [],
-        energy: '',
-        lasers: '',
-        shield: '',
-        price: ''
-      });
-
-      this.props.loadShipsForSale();
-
-      // TODO: show success
-
-      return true;
-    })
-    .catch((err) => {
-      console.error(err);
-      // TODO: show error blockchain / ipfs
-      
-    })
-    .finally(() => {
-      this.setState({isSubmitting: false});
-    });
+    // TODO: Implementar llamada al contrato para crear el token
+    // Un token espera los siguientes atributos: energy, lasers, shield and price
+    // al igual que una imagen
+    // La siguiente funcion se puede llamar para actualizar la lista de tokens
+    this.props.loadShipsForSale();
+    this.setState({isSubmitting: false});
   }
 
   render(){

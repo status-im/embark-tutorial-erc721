@@ -16,55 +16,25 @@ class WithdrawBalance extends Component {
   }
 
   componentDidMount(){
-    EmbarkJS.onReady((err) => {
-      // Al cargar el componente, obtenemos el balance
-      this._getBalance();
-    });
+    // TODO: Al cargar el componente, debemos obtener el balance
+    // podemos hacerlo llamando a this._getBalance();
   }
 
   _getBalance(){
-
-    // Se consulta el balance del contrato
-    web3.eth.getBalance(SpaceshipToken.options.address)
-      .then(newBalance => {
-        this.setState({
-          balance: web3.utils.fromWei(newBalance, "ether")
-        });
-      });
+    // TODO: implementar, el estado a actualizar es 'balance'
     
   }
 
   handleClick(e){
-    const { withdrawBalance } = SpaceshipToken.methods;
-
     e.preventDefault();
 
+    // TODO: este metodo se debe llamar al hacer click en retirar fondos
+    // Debe extraer el balance total del contrato del token, y actualizar el UI
+    // para mostrar que no hay balance disponible
+
     this.setState({isSubmitting: true});
-
-    // Retiramos el balance total del contrato
-    // Estimamos primero el gas para saber cuanto gas enviar
-    
-    const toSend = withdrawBalance();
-    toSend.estimateGas()
-      .then(estimatedGas => {
-          // Es una buena practica mandar siempre algo mas del gas estimado
-          return toSend.send({from: web3.eth.defaultAccount,
-                              gas: estimatedGas + 1000});
-      })
-      .then(receipt => {
-        console.log(receipt);
-        this._getBalance();
-        // TODO mostrar info
-
-        return true;
-      })
-      .catch((err) => {
-        console.error(err);
-        // TODO: mostrar error
-      })
-      .finally(() => {
-        this.setState({isSubmitting: false});
-      });
+    this._getBalance();
+    this.setState({isSubmitting: false});
   }
 
   render(){
