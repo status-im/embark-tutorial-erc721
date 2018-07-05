@@ -54,17 +54,17 @@ module.exports = {
           "privateKey": "..............."
         },
       ],
-      host: "ropsten.infura.io/...............",
+      host: "ropsten.infura.io/..............",
       port: false,
       protocol: 'https', // <=== must be specified for infura, can also be http, or ws
       type: "rpc"
     },
     contracts: {
       "SpaceshipToken": {
-        address: "0x79Dc5C2B0b607702f977265595eF33efe68974A6"
+        address: "0x47c71B1ceefE7a1038830C1BdA0305FaEce95520"
       },
       "SpaceshipMarketplace": {
-        address: "0xD6B7b28F61BCbE8f044095029FCD3745bea68F4d"
+        address: "0x3DA2e1a28141cf2D7B735C8c5eBfFF4cC7C91a9a"
       }
     }
   }
