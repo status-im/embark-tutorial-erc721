@@ -12,7 +12,7 @@ The contract we will use to represent the spaceships is `SpaceshipToken` and it 
 
 For minting the tokens we will use a combination of IPFS to store the image and attributes, and the function `mint(bytes _metadataHash, uint8 _energy,  uint8 _lasers, uint8 _shield, uint _price) public onlyOwner`.
 
-Let's edit the file `app/js/components/addToken.js` which contains the form to add tokens:
+Let's edit the file `app/js/components/addToken.js` which contains the form to add tokens. You can use the spaceship images from the folder `resources`
 
 #### Importing Embark and contracts
 Before being able to interact with the EVM, and with IPFS, you need to import both EmbarkJS and the contract file:
@@ -115,7 +115,7 @@ EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
 
 Notice that we stored the function call in the `toSend` variable, however it does not mean that we're creating a transaction here. With this `toSend` variable we're able to send a transaction or estimating gas (also, calling a value if the contract function were a `constant`/`view`/`pure` function).
 
-Also, we introduced the use of two `web3.utils` functions: `toHex`, to convert any given value to a HEX string, and also, `toWei`, to convert from ether to wei, since in the UI we're introducing the values as ether, and the smart contract uses wei.
+> We introduced the use of two `web3.utils` functions: `toHex`, to convert any given value to a HEX string, and also, `toWei`, to convert from ether to wei, since in the UI we're introducing the values as ether, and the smart contract uses wei.
 
 After estimating gas, we proceed to create the transaction by returning the `send` method of our contract with the estimated gas plus an additional wei amount (estimateGas() is not always precise).
 
