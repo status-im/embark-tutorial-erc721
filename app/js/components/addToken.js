@@ -29,21 +29,28 @@ class AddToken extends Component {
 
     this.setState({isSubmitting: true});
 
-    // TODO: Implementar llamada al contrato para crear el token
-    // Un token espera los siguientes atributos: energy, lasers, shield and price
-    // al igual que una imagen
-    // La siguiente funcion se puede llamar para actualizar la lista de tokens
+    // ============== BEGIN: Function implementation here ================ //
+    
+    // TODO: Implement call to the contract to create a token
+    // A token expects the followin attributes: energy, lasers, shield and price
+    // and a metadataHash that contains the attribute list
+
+    // TODO: the next function needs to be invoked to update the list of spaceships
     this.props.loadShipsForSale();
+
+    // TODO: remember to update isSubmitting to false to enable the create button
+
     this.setState({isSubmitting: false});
+    // ============== END: Function implementation here  ================ // 
   }
 
   render(){
     return <Grid>
-            <h4>Crear nave</h4>
+            <h4>Create Spaceship</h4>
             <FormGroup>
               <Row>
                 <Col sm={2} md={2}>
-                  <ControlLabel><i className="fa fa-dashboard" aria-hidden="true"></i> Energ&iacute;a</ControlLabel>                  
+                  <ControlLabel><i className="fa fa-dashboard" aria-hidden="true"></i> Energy</ControlLabel>                  
                   <FormControl
                     type="text"
                     value={this.state.energy}
@@ -57,14 +64,14 @@ class AddToken extends Component {
                     onChange={(e) => this.handleChange('lasers', e.target.value)} />
                 </Col>
                 <Col sm={2} md={2}>
-                  <ControlLabel><i className="fa fa-shield" aria-hidden="true"></i> Escudo</ControlLabel>                  
+                  <ControlLabel><i className="fa fa-shield" aria-hidden="true"></i> Shields</ControlLabel>                  
                   <FormControl
                     type="text"
                     value={this.state.shield}
                     onChange={(e) => this.handleChange('shield', e.target.value)} />
                 </Col>
                 <Col sm={2} md={2}>
-                  <ControlLabel>Precio</ControlLabel>                  
+                  <ControlLabel>Price</ControlLabel>                  
                   <InputGroup>
                     <FormControl
                       type="text"
@@ -74,7 +81,7 @@ class AddToken extends Component {
                   </InputGroup>
                 </Col>
                 <Col sm={4} md={4}>
-                  <ControlLabel>Imagen</ControlLabel>                  
+                  <ControlLabel>Image</ControlLabel>                  
                   <FormControl
                     type="file"
                     onChange={(e) => this.handleChange('fileToUpload', [e.target])} />
@@ -85,7 +92,7 @@ class AddToken extends Component {
                   {
                     this.state.isSubmitting 
                     ? <Spinner name="wave" color="coral"/>
-                    : <Button disabled={this.state.isSubmitting} onClick={(e) => this.handleClick(e)}>Crear</Button>
+                    : <Button disabled={this.state.isSubmitting} onClick={(e) => this.handleClick(e)}>Create</Button>
                   }
                 </Col>
               </Row>
