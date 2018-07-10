@@ -2,7 +2,9 @@
 
 Before starting, it's important to have setup correctly our workspace. You can follow the steps described in the [documentation](https://embark.status.im/docs/), since it will always be updated to reflect latest changes in the framework. If you already have Embark and its dependencies installed you can skip this step.
 
-At the moment of writing the tutorial, the commands I used on Ubuntu 18.04 were these. Some steps change depending on the operative system used (i.e. [node-gyp](https://github.com/nodejs/node-gyp)), as well as the versions of files. Please refer to Embark or any of the installed tools' documentation website for troubleshooting.
+At the moment of writing the tutorial, the commands I used on Ubuntu 18.04 were these. Some steps change depending on the operative system used (i.e. [node-gyp](https://github.com/nodejs/node-gyp)), as well as the versions of files. Please refer to Embark or any of the installed tools' documentation website for troubleshooting. Also a docker image is being built with Embark and all its dependencies, and it may be used to follow this tutorial.
+
+## Ubuntu Installation
 
 ### NodeJS 9.8.0 (lts) with nvm 0.33.11
 ```

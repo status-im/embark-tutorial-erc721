@@ -83,15 +83,74 @@ EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
 ```
 
 #### Using our contract to mint the new token
+Finally, once we have both the Image and the Attributes stored in IPFS it's time to mint our new token. This is done in two steps: first, we estimate the gas cost to invoke the `mint(bytes _metadataHash, uint8 _energy,  uint8 _lasers, uint8 _shield, uint _price) public onlyOwner` (it's a good practice, in order to avoid running into Out of Gas exceptions), and then, we will create the transaction. To estimate gas, we use the estimateGas() function of the contract:
 
+```
+const { mint } = SpaceshipToken.methods;
+let toSend;
 
+EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
+.then(fileHash => {
+    attributes.image = 'https://ipfs.io/ipfs/' + fileHash;
+    return EmbarkJS.Storage.saveText(JSON.stringify(attributes))
+})
+.then(attrHash => {
+    toSend = mint(web3.utils.toHex(attrHash), 
+                          this.state.energy, 
+                          this.state.lasers, 
+                          this.state.shield,
+                          web3.utils.toWei(this.state.price, "ether"));
+    return toSend.estimateGas();
+})
+.then(estimatedGas => {
+    console.log(estimatedGas);
+})
+.catch((err) => {
+    console.error(err);
+})
+.finally(() => {
+    this.setState({isSubmitting: false});
+});
+```
+
+Notice that we stored the function call in the `toSend` variable, however it does not mean that we're creating a transaction here. With this `toSend` variable we're able to send a transaction or estimating gas (also, calling a value if the contract function were a `constant`/`view`/`pure` function).
+
+Also, we introduced the use of two `web3.utils` functions: `toHex`, to convert any given value to a HEX string, and also, `toWei`, to convert from ether to wei, since in the UI we're introducing the values as ether, and the smart contract uses wei.
+
+After estimating gas, we proceed to create the transaction by returning the `send` method of our contract with the estimated gas plus an additional wei amount (estimateGas() is not always precise).
+
+```
+...
+...
+.then(estimatedGas => {
+    return toSend.send({gas: estimatedGas + 1000});
+})
+.then(receipt => {
+    console.log(receipt);
+
+    // Reset form
+    this.setState({
+    fileToUpload: [],
+    energy: '',
+    lasers: '',
+    shield: '',
+    price: ''
+    });
+
+    this.props.loadShipsForSale();
+})
+...
+...
+```
+Notice that `send()` returns a promise, and when it resolves, you can access a receipt object with all the information about the transaction as well as logs generated. Here we also clean the form, and invoke `this.props.loadShipsForSale()` to reload the list of ships. It doesn't do anything at the moment since we haven't implemented it yet.
+
+We did not implement success/error alert messages or warnings to the user. These can be added inside the promise resolution and catch blocks.
 
 ### Full implementation of the handleClick(e) function:
 ```
 handleClick(e){
     e.preventDefault();
 
-    const { mint } = SpaceshipToken.methods;
 
     this.setState({isSubmitting: true});
 
@@ -105,6 +164,7 @@ handleClick(e){
       }
     }
 
+    const { mint } = SpaceshipToken.methods;
     let toSend;
 
     EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
@@ -121,8 +181,7 @@ handleClick(e){
       return toSend.estimateGas();
     })
     .then(estimatedGas => {
-      return toSend.send({from: web3.eth.defaultAccount,
-                          gas: estimatedGas + 1000});
+      return toSend.send({gas: estimatedGas + 1000});
     })
     .then(receipt => {
       console.log(receipt);
@@ -133,9 +192,7 @@ handleClick(e){
         shield: '',
         price: ''
       });
-
       this.props.loadShipsForSale();
-      return true;
     })
     .catch((err) => {
       console.error(err);
