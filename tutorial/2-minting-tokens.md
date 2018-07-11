@@ -17,6 +17,7 @@ Let's edit the file `app/js/components/addToken.js` which contains the form to a
 #### Importing Embark and contracts
 Before being able to interact with the EVM, and with IPFS, you need to import both EmbarkJS and the contract file:
 ```
+import web3 from "Embark/web3"
 import EmbarkJS from 'Embark/EmbarkJS';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 ```
