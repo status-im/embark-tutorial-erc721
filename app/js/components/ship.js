@@ -75,7 +75,11 @@ class Ship extends Component {
         const { energy, lasers, shield, price, wallet, salesEnabled, marketplace } = this.props;
         const { image, isSubmitting, showSellForm } = this.state;
         
-        const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
+        // ============== BEGIN: Format price here ================ //
+
+        const formattedPrice = !wallet ? price : '';
+
+        // ============== END: Format price here   ================ //
 
         return <div className="ship">
             { !wallet ? <span className="price">{formattedPrice} Ξ</span> : ''}

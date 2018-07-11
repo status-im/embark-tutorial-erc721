@@ -32,13 +32,14 @@ module.exports = {
     ],
     gas: "auto",
     contracts: {
+      // OpenZeppelin contracts
       "AddressUtils": { "deploy": false },
       "SafeMath": { "deploy": false },
       "ERC721Token": { "deploy": false },
       "ERC721BasicToken": { "deploy": false },
       "ERC721Holder": { "deploy": false },
-
       "Ownable": { "deploy": false },
+      // Our contracts
       "SpaceshipToken": {
       },
       "SpaceshipMarketplace": {

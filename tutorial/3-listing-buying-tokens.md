@@ -11,6 +11,21 @@ import web3 from "Embark/web3"
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 ```
 
+EmbarkJS offers a `onReady(err)` method to run Javascript code as soon as the connections to the web3 providers and ipfs are done and become safe to interact with. This function is ideal to perfom task that need to be executed as soon as these connections are made.
+
+We'll use this function inside componentDidMount(), to load all the spaceships of the diferent sections of the DApp:
+
+```
+componentDidMount(){
+    EmbarkJS.onReady((err) => {
+        this._loadEverything();
+    });
+}
+```
+
+`_loadEverything()` has a call to the method `_loadShipsForSale()` which is the one we're interested to implement to load all the newly minted tokens that we wish to sell.
+
+
 
     _loadShipsForSale = async () => {
         const { shipsForSaleN, shipsForSale, spaceshipPrices, spaceships } = SpaceshipToken.methods;
@@ -189,7 +204,17 @@ withdrawBalance.js
 ## Display the mint form only if we are the owners of the contract
 One thing you may have noticed is that the minting form shows up always even if you're not the owner of the contract. Our `SpaceshipToken` contract inherits from `Owned` which adds an `owner()` method that we can use to determine if the account browsing the dapp is the owner of the contract
 
-For this, let's go back to `app/js/index.js`. The method `_isOwner` is called when the component mounts, due to it being a good place to load data from a remote endpoint (in this case, the EVM).
+For this, let's go back to `app/js/index.js`. The method `_isOwner` needs to be called when the component mounts, due to it being a good place to load data from a remote endpoint (in this case, the EVM).
+
+```
+componentDidMount(){
+    EmbarkJS.onReady((err) => {
+        this._isOwner();
+        this._loadEverything();
+    });
+}
+```
+
 
 ```
 _isOwner(){

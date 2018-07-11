@@ -19,23 +19,28 @@ class App extends Component {
     }
 
     componentDidMount(){
-        // TODO: Debemos determinar si la cuenta que estamos usando es la del dueno del token
-        // y cargar tambien las naves
+        // ============== BEGIN: Function implementation here ================ //
+
+        // Determine if we are the owners of the contract
         this._isOwner();
+        // Load spaceships in different sections
         this._loadEverything();
+
+        // ============== END: Function implementation here   ================ //
     }
 
     _loadEverything(){
-        // Cargamos todas las naves que estan a la venta, que estan en mi wallet y en el mercado
-        this._loadShipsForSale();
-        this._loadMyShips();
-        this._loadMarketPlace();
+        this._loadShipsForSale(); // New tokens sales
+        this._loadMyShips(); // My Wallet
+        this._loadMarketPlace(); // Token marketplace
     }
 
     _isOwner(){
-        // TODO: Nos interesa saber si somos el dueno del contrato para mostrar el formulario de tokens
-        // Debemos actualizar el estado isOwner con la informacion del contrato
+        // ============== BEGIN: Function implementation here ================ //    
+        // TODO: determine if we are the owners of the contract
         this.setState({isOwner: true}); 
+                // ============== BEGIN: Function implementation here ================ //
+        // ============== END: Function implementation here   ================ //
     }
 
     _loadMyShips = async () => {
@@ -104,26 +109,26 @@ class App extends Component {
         return (
         web3 == undefined 
         ? <Fragment>
-            <h3>No se detectó ningun proveedor de web3</h3>
-            <p>La forma mas simple de interactuar con esta DApp es a traves de Status:</p>
+            <h3>No web3 provider was detected</h3>
+            <p>The easiest way to interact with this DApp is using Status:</p>
             <ul>
-                <li>IOS: Registrate <a href="https://status.im/success.html">aqui</a></li>
-                <li>Android: Descargalo desde el <a href="https://hs-3954379.t.hubspotemail.net/e1t/c/*W41DrrR576YXwW1g0twY4l6xHW0/*W4W80L47W9sgzW29n3jf3B0spz0/5/f18dQhb0S4007rmtHfV12fxx5VRhLcN56MR7dhW2vYW6FzPhr8bLg8BW7wfwHD77xh4BVC-SLw8K_1QSW5GxQvR1sQJ5jVD9fTd4nXXdvMNQbcPgVDM_N33FZt2S-Y7DW91QKkb4RkrPPW493NBn8KgjlJN88JFdQ4DH0cW9cs3zS6VKqGRW7G0nyJ3z8s2PW3pb3q040w1lQW4p0nGT2FfY9KMrYVt8rT2YCW3GL73b2Fj2j4N56RMzHfcp_hW7fW6gW4dBzfRW3tZgJb6wB1JfVd0zbv35wh4RN8zbXKpnyfj6W6yM6K41NZprfN1PZNlPgv7zFW71lRcW8yGypBMnGzt-xFbw9N8TJbMTVfCwcW1YQHxz1GQtXKW657lCJ5fhKvjW1_8CNL4BTT7wW69P8Y64hksdCW80wSFy4CkbFPW1pPcF65bpn_JW7WZ7l285LvsQVWNwb38cgFp2W2DF0P046C5dqN7L0FQ2SrfSCW3yggzM7T60VNW6-9ws44Nq68yW5ghc8S3jzRf5W7NDz4_49hbllW1CCcl63gd1KmW2n5V8p5slbFjW7PgZ_T5vd89hMxFPvDlGMxDW3VqJG78dKTzXN46s6SqMbrmyW5L36lt6n-7WNW141ZBT444dDhW5t6Y8f8Z1MLWV4pX33282QyrW1j06VK7zr2Q6W7bcdfr591ZtSW43_Xkw4lPzBFW4h7jHc97dFs7W88ZFRD1GXrZpW9jWR8G6Xg9lQN3GBfHngxjrGf39tZ-n03">PlayStore</a></li>
+                <li>IOS: Sign up <a href="https://status.im/success.html">here</a></li>
+                <li>Android: Download from the <a href="https://hs-3954379.t.hubspotemail.net/e1t/c/*W41DrrR576YXwW1g0twY4l6xHW0/*W4W80L47W9sgzW29n3jf3B0spz0/5/f18dQhb0S4007rmtHfV12fxx5VRhLcN56MR7dhW2vYW6FzPhr8bLg8BW7wfwHD77xh4BVC-SLw8K_1QSW5GxQvR1sQJ5jVD9fTd4nXXdvMNQbcPgVDM_N33FZt2S-Y7DW91QKkb4RkrPPW493NBn8KgjlJN88JFdQ4DH0cW9cs3zS6VKqGRW7G0nyJ3z8s2PW3pb3q040w1lQW4p0nGT2FfY9KMrYVt8rT2YCW3GL73b2Fj2j4N56RMzHfcp_hW7fW6gW4dBzfRW3tZgJb6wB1JfVd0zbv35wh4RN8zbXKpnyfj6W6yM6K41NZprfN1PZNlPgv7zFW71lRcW8yGypBMnGzt-xFbw9N8TJbMTVfCwcW1YQHxz1GQtXKW657lCJ5fhKvjW1_8CNL4BTT7wW69P8Y64hksdCW80wSFy4CkbFPW1pPcF65bpn_JW7WZ7l285LvsQVWNwb38cgFp2W2DF0P046C5dqN7L0FQ2SrfSCW3yggzM7T60VNW6-9ws44Nq68yW5ghc8S3jzRf5W7NDz4_49hbllW1CCcl63gd1KmW2n5V8p5slbFjW7PgZ_T5vd89hMxFPvDlGMxDW3VqJG78dKTzXN46s6SqMbrmyW5L36lt6n-7WNW141ZBT444dDhW5t6Y8f8Z1MLWV4pX33282QyrW1j06VK7zr2Q6W7bcdfr591ZtSW43_Xkw4lPzBFW4h7jHc97dFs7W88ZFRD1GXrZpW9jWR8G6Xg9lQN3GBfHngxjrGf39tZ-n03">PlayStore</a></li>
             </ul>
-            <p>Tambien puedes usar <a href="https://metamask.io/">Metamask</a></p>
+            <p>You can also use <a href="https://metamask.io/">Metamask</a></p>
         </Fragment>
         :
         <Fragment>
             { isOwner && !hidePanel ? 
                 <div id="management">
-                    <span className="close" onClick={ (e) => this.setState({'hidePanel': true})}>cerrar</span>
+                    <span className="close" onClick={ (e) => this.setState({'hidePanel': true})}>close</span>
                     <WithdrawBalance />
                     <AddToken loadShipsForSale={this._loadShipsForSale} />
                 </div> : '' 
             }
-            <ShipList title="Mis Naves" id="myShips" list={myShips} onAction={(e) => this._loadEverything()} wallet={true}  />
+            <ShipList title="My Wallet" id="myShips" list={myShips} onAction={(e) => this._loadEverything()} wallet={true}  />
             <MarketPlace list={marketPlaceShips} onAction={(e) => this._loadEverything()} />
-            <ShipList title="Tienda" id="shipyard" list={shipsForSale} onAction={(e) => this._loadEverything()} />
+            <ShipList title="Store" id="shipyard" list={shipsForSale} onAction={(e) => this._loadEverything()} />
         </Fragment>);
     }
 }
