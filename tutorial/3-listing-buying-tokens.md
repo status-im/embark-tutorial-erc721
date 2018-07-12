@@ -5,7 +5,7 @@ As you can see when you browser the DApp at this point, we show a placeholder sp
 
 Let's start by removing it. Open the file `app/js/index.js` and remove the constant `myShip` from `_loadMyShips()`. You also need to remove it from the `list` array.
 
-Since we're going to use the SpaceshipToken contract, EmbarkJS and web3 functions, let's import them
+Since we're going to use the `SpaceshipToken` contract, `EmbarkJS` and `web3` functions, let's import them
 
 ```
 import EmbarkJS from 'Embark/EmbarkJS';
@@ -13,9 +13,9 @@ import web3 from "Embark/web3";
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 ```
 
-EmbarkJS offers a `onReady(err)` method to run Javascript code as soon as the connections to the web3 providers and ipfs are done and become safe to interact with. This function is ideal to perfom task that need to be executed as soon as these connections are made.
+`EmbarkJS` provides a `onReady(err)` method to run Javascript code as soon as the connections to the web3 providers and ipfs are done and become safe to interact with. This function is ideal to perfom task that need to be executed as soon as these connections are made.
 
-We'll use this function inside componentDidMount(), to load all the spaceships of the diferent sections of the DApp:
+We'll use this function inside `componentDidMount()`, to load all the spaceships of the diferent sections of the DApp:
 
 ```
 componentDidMount(){
@@ -25,37 +25,86 @@ componentDidMount(){
 }
 ```
 
-`_loadEverything()` has a call to the method `_loadShipsForSale()` which is the one we're interested to implement to load all the newly minted tokens that we wish to sell.
+`_loadEverything()` has a call to the method `_loadShipsForSale()` which is the one we're interested to implement, in order to load all the newly minted tokens we wish to sell.
+
+The `SpaceshipToken` contract has a couple of methods we can use for helping us display the tokens for sale and their information:
+
+- `shipsForSaleN` returns the number of ships for sale in the store
+- `shipsForSale` receives an index number and returns the token id for sale
+- `spaceshipPrices` receives a token id, and return the price for that token
+- `spaceships` which receives the id, and returns the struct that represents a spaceship.
+
+Let's use these functions. First, let's extract them to their own variables, and declare an array to store the objects that will represent the spaceships:
+
+```
+_loadShipsForSale = async () => {
+    const { shipsForSaleN, shipsForSale, spaceshipPrices, spaceships } = SpaceshipToken.methods;
+
+    const list = [];
+}
+```
+
+Since we cannot return all the spaceships for sale at once, we need a loop to query the information for each spaceship individually:
+
+```
+_loadShipsForSale = async () => {
+    const { shipsForSaleN, shipsForSale, spaceshipPrices, spaceships } = SpaceshipToken.methods;
+
+    const list = [];
+
+    const total = await shipsForSaleN().call();
+    if(total){
+        for (let i = total-1; i >= 0; i--) {
+            const id = await shipsForSale(i).call();
+            const info = await spaceships(shipId).call();
+            const price = await spaceshipPrices(shipId).call();
+        }
+    }
+}
+```
+
+The spaceship object for the store section requires the following attributes: `id`, `price`, `metadataHash`, `lasers`, `shield`, `energy`, and since the last four are part of the `info` variable, we can use the spread operator (...) to avoid having to write each attribute individually. Once you create the object, add it to `list`, and update the `shipsForSale` state with this array:
 
 
+```
+_loadShipsForSale = async () => {
+    const { shipsForSaleN, shipsForSale, spaceshipPrices, spaceships } = SpaceshipToken.methods;
 
-    _loadShipsForSale = async () => {
-        const { shipsForSaleN, shipsForSale, spaceshipPrices, spaceships } = SpaceshipToken.methods;
-    
-        const total = await shipsForSaleN().call();
-        const list = [];
-        if(total){
-          for (let i = total-1; i >= 0; i--) {
-            const shipId = await shipsForSale(i).call();
-            const _info = await spaceships(shipId).call();
-            const _price = await spaceshipPrices(shipId).call();
-    
+    const list = [];
+
+    const total = await shipsForSaleN().call();
+    if(total){
+        for (let i = total-1; i >= 0; i--) {
+            const id = await shipsForSale(i).call();
+            const info = await spaceships(shipId).call();
+            const price = await spaceshipPrices(shipId).call();
+
             const ship = {
-              price: _price,
-              id: shipId,
-              ..._info
+                id,
+                price,       
+                ..._info
             };
             list.push(ship);
-          }
         }
-        this.setState({shipsForSale: list.reverse()});
     }
+    this.setState({shipsForSale: list});
+}
+```
 
-ships.js
+You may have noticed that the ships that you create are displayed in the UI, however, they lack their image, and the prices are not formatted correctly. We need to work on the file `app/js/components/ship.js` for this.
 
+As usual, start by importing `EmbarkJS` and `web3`, as well as our `SpaceshipToken`
+
+```
 import EmbarkJS from 'Embark/EmbarkJS';
 import web3 from "Embark/web3";
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
+```
+
+
+
+TODO: 
+
 
     componentDidMount(){
         EmbarkJS.onReady((err) => {
@@ -79,14 +128,12 @@ import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
             });
     }
 
-render(){
-        const { energy, lasers, shield, price, wallet, salesEnabled, marketplace } = this.props;
-        const { image, isSubmitting, showSellForm } = this.state;
-        
-        const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
 
+Finally, to format the price, on the `render` method, we will update the constant `formattedPrice` to use `web3.utils.fromWei` and convert the value from wei to ether as expected:
 
-
+```
+const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
+```
 
 
 ## Buying the tokens
@@ -105,7 +152,7 @@ buyFromStore = () => {
 }
 ```
 
-The next step is to estimate the gas to invoke the contract function. For this case in particular, we need the token id (`this.props.id`), and, since this transaction involves sending ether, we need to specify the value. We can obtain it from `this.props.price`. Notice we also have a `catch` and `finally` blocks:
+The next step is to estimate the gas to invoke the contract function. For this scenario in particular, we need the token id (`this.props.id`), and, since this transaction involves sending ether, we need to specify the value. We can obtain it from `this.props.price`. Notice we also have a `catch` and `finally` blocks:
 
 ```
 buyFromStore = () => {
@@ -157,28 +204,36 @@ buyFromStore = () => {
 ```
 
 ## Listing our tokens
-index.js
+This functionallity is very similar to loading the ships for sale. In fact you may even refactor it to avoid duplicating code. The functions that you need from the `SpaceshipToken` contract for this section are:
+
+- `balanceOf`, which returns the number of tokens an address has. We will use `web3.eth.defaultAccount` since this contains the address that a user has when browsing our dapp.
+- `tokenOfOwnerByIndex`, which expects an index number and will return the token id,
+- and `spaceships` to retrieve the token information.
+
+Open the file `app/js/index.js` and implement the method `_loadMyShips`: 
+
+```
  _loadMyShips = async () => {
-        const { balanceOf, tokenOfOwnerByIndex, spaceships } = SpaceshipToken.methods;
+    const { balanceOf, tokenOfOwnerByIndex, spaceships } = SpaceshipToken.methods;
     
-        const total = await balanceOf(web3.eth.defaultAccount).call();
-        const list = [];
-        if(total){
-          for (let i = total-1; i >= 0; i--) {
-            const myShipId = await tokenOfOwnerByIndex(web3.eth.defaultAccount, i).call();
-            const _info = await spaceships(myShipId).call();
+    const list = [];
+
+    const total = await balanceOf(web3.eth.defaultAccount).call();
+    if(total){
+        for (let i = total-1; i >= 0; i--) {
+            const id = await tokenOfOwnerByIndex(web3.eth.defaultAccount, i).call();
+            const info = await spaceships(myShipId).call();
     
             const ship = {
-              id: myShipId,
-              ..._info
+              id,
+              ...info
             };
             list.push(ship);
-          }
         }
-        this.setState({myShips: list.reverse()});
-      }
-
-
+    }
+    this.setState({myShips: list.reverse()});
+}
+```
 
 ## Showing and withdrawing the balance from sales
 When someone buys a spaceship from the store, the balance of the contract is incremented, and the owner should be able to query how much ether does the contract have, and also be able to withdraw this ether.
