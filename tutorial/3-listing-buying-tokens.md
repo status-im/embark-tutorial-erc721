@@ -1,13 +1,15 @@
 ## Listing the newly minted tokens
 As you can see when you browser the DApp at this point, we show a placeholder spaceship, just so we can see how a token would look like when all the functionality of the DApp is implemented.
 
+[IMAGE_HERE]
+
 Let's start by removing it. Open the file `app/js/index.js` and remove the constant `myShip` from `_loadMyShips()`. You also need to remove it from the `list` array.
 
 Since we're going to use the SpaceshipToken contract, EmbarkJS and web3 functions, let's import them
 
 ```
 import EmbarkJS from 'Embark/EmbarkJS';
-import web3 from "Embark/web3"
+import web3 from "Embark/web3";
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 ```
 
@@ -52,7 +54,7 @@ componentDidMount(){
 ships.js
 
 import EmbarkJS from 'Embark/EmbarkJS';
-import web3 from "Embark/web3"
+import web3 from "Embark/web3";
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 
     componentDidMount(){
@@ -145,61 +147,103 @@ index.js
 
 
 ## Showing and withdrawing the balance from sales
-withdrawBalance.js
+When someone buys a spaceship from the store, the balance of the contract is incremented, and the owner should be able to query how much ether does the contract have, and also be able to withdraw this ether.
 
-  componentDidMount(){
+We will add this behavior to the WithdrawBalance component. Open the file `app/js/components/withdrawBalance.js`. We need to use web3 and EmbarkJS to add this functionality, so import those libraries:
+
+```
+import EmbarkJS from 'Embark/EmbarkJS';
+import web3 from "Embark/web3";
+```
+
+The balance needs to be loaded when the page loads. This should be done in `componentDidMount()`. Remember to use `EmbarkJS.onReady((err) => {})` to be able to interact with the EVM as soon as the component mounts.
+
+```
+componentDidMount(){
     EmbarkJS.onReady((err) => {
-      // Al cargar el componente, obtenemos el balance
-      this._getBalance();
+        this._getBalance();
     });
-  }
+}
+```
 
-  _getBalance(){
+`_getBalance()` will contain the logic required to query the balance. For this, we use `web3.eth.getBalance` to determine how much ether our `SpaceshipToken` contract address holds. This function returns a promise which resolves to a wei amount that needs to be formatted to Ether, since this is what the UI is expecting:
 
-    // Se consulta el balance del contrato
+```
+_getBalance(){
     web3.eth.getBalance(SpaceshipToken.options.address)
-      .then(newBalance => {
-        this.setState({
-          balance: web3.utils.fromWei(newBalance, "ether")
-        });
-      });
-    
-  }
+    .then(newBalance => {
+            this.setState({
+                balance: web3.utils.fromWei(newBalance, "ether")
+            });
+    });
+}
+```
 
-  handleClick(e){
-    const { withdrawBalance } = SpaceshipToken.methods;
+[IMAGE_HERE]
 
+The withdraw button calls the `handleClick(e)` method, but at the moment it does not do anything. For implementing it's functionality we will use the function `withdrawBalance` of the `SpaceshipToken` contract.
+The process is similar to what we have seen before: estimate gas before sending the transaction.
+
+First, let's disable the button when we click it, and extract the `withdrawBalance` function to its own variable:
+
+```
+handleClick(e){
     e.preventDefault();
-
     this.setState({isSubmitting: true});
 
-    // Retiramos el balance total del contrato
-    // Estimamos primero el gas para saber cuanto gas enviar
-    
+    const { withdrawBalance } = SpaceshipToken.methods;
+}
+```
+
+Then, proceed to estimate the cost of calling `withdrawBalance()` using `estimateGas()`. Remember this returns a promise which resolves to the gas cost. It's also a good idea to add a `catch` and `finally` blocks to handle errors and enable the withdraw button again.
+
+```
+handleClick(e){
+    e.preventDefault();
+    this.setState({isSubmitting: true});
+
+    const { withdrawBalance } = SpaceshipToken.methods;
+
     const toSend = withdrawBalance();
     toSend.estimateGas()
-      .then(estimatedGas => {
-          // Es una buena practica mandar siempre algo mas del gas estimado
-          return toSend.send({from: web3.eth.defaultAccount,
-                              gas: estimatedGas + 1000});
-      })
-      .then(receipt => {
+    .then(estimatedGas => {
+        console.log(estimatedGas);
+    })
+    .catch((err) => {
+        console.error(err);
+    })
+    .finally(() => {
+        this.setState({isSubmitting: false});
+    });
+}
+```
+
+Finally, once we have the estimated gas, we can submit the transaction. As we did before, we will add a little extra gas to deal with unprecise gas estimations. Also, after we get the receipt, we will query again the balance in case it has changed between the withdrawal transaction and the current block.
+
+```
+handleClick(e){
+    e.preventDefault();
+    this.setState({isSubmitting: true});
+
+    const { withdrawBalance } = SpaceshipToken.methods;
+
+    const toSend = withdrawBalance();
+    toSend.estimateGas()
+    .then(estimatedGas => {
+        return toSend.send({gas: estimatedGas + 1000});
+    })
+    .then(receipt => {
         console.log(receipt);
         this._getBalance();
-        // TODO mostrar info
-
-        return true;
-      })
-      .catch((err) => {
+    })
+    .catch((err) => {
         console.error(err);
-        // TODO: mostrar error
-      })
-      .finally(() => {
+    })
+    .finally(() => {
         this.setState({isSubmitting: false});
-      });
-  }
-
-
+    });
+}
+```
 
 ## Display the mint form only if we are the owners of the contract
 One thing you may have noticed is that the minting form shows up always even if you're not the owner of the contract. Our `SpaceshipToken` contract inherits from `Owned` which adds an `owner()` method that we can use to determine if the account browsing the dapp is the owner of the contract
