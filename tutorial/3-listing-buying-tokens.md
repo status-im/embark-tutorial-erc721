@@ -90,37 +90,71 @@ render(){
 
 
 ## Buying the tokens
-    buyFromStore = () => {
-        const { buySpaceship } = SpaceshipToken.methods;
-        const toSend = buySpaceship(this.props.id)
 
-        this.setState({isSubmitting: true});
+[IMAGE_HERE]
 
-        toSend.estimateGas({value: this.props.price })
-            .then(estimatedGas => {
-                return toSend.send({from: web3.eth.defaultAccount,
-                                    value: this.props.price,
-                                    gas: estimatedGas + 1000000});
-            })
-            .then(receipt => {
-                console.log(receipt);
+As you can see, each spaceship has a buy button. Clicking this button should generate a transaction in which we send the value in wei of the token, and this token is transferred to our address. The `SpaceshipToken` contract has a `buySpaceship` function we can use for such purposes. 
 
-                console.log("Updating ships");
-                this.props.onAction();
+Let's start by implementing the functionality of the `buyFromStore` method. Disable the button and extract the `buySpaceship` function to its own variable:
 
-                // TODO: show success
-                return true;
-            })
-            .catch((err) => {
-                console.error(err);
-                // TODO: show error blockchain
-            })
-            .finally(() => {
-                this.setState({isSubmitting: false});
-            });
-    }
+```
+buyFromStore = () => {
+    this.setState({isSubmitting: true});
 
+    const { buySpaceship } = SpaceshipToken.methods;
+}
+```
 
+The next step is to estimate the gas to invoke the contract function. For this case in particular, we need the token id (`this.props.id`), and, since this transaction involves sending ether, we need to specify the value. We can obtain it from `this.props.price`. Notice we also have a `catch` and `finally` blocks:
+
+```
+buyFromStore = () => {
+    this.setState({isSubmitting: true});
+
+    const { buySpaceship } = SpaceshipToken.methods;
+
+    const toSend = buySpaceship(this.props.id)
+
+    toSend.estimateGas({value: this.props.price })
+    .then(estimatedGas => {
+        console.log(estimatedGas);
+    })
+    .catch((err) => {
+        console.error(err);
+    })
+    .finally(() => {
+        this.setState({isSubmitting: false});
+    });
+}
+```
+
+Then, with the `estimatedGas` variable, we generate the transaction. Since buying the spaceship means that the ship will be transferred from the store to your wallet, it's a good idea to reload the different sections of the index page. You can use `this.props.onAction();` for this.
+
+```
+buyFromStore = () => {
+    this.setState({isSubmitting: true});
+
+    const { buySpaceship } = SpaceshipToken.methods;
+
+    const toSend = buySpaceship(this.props.id)
+
+    toSend.estimateGas({value: this.props.price })
+    .then(estimatedGas => {
+        return toSend.send({value: this.props.price,
+                            gas: estimatedGas + 1000000});
+    })
+    .then(receipt => {
+        console.log(receipt);
+        this.props.onAction();
+    })
+    .catch((err) => {
+        console.error(err);
+    })
+    .finally(() => {
+        this.setState({isSubmitting: false});
+    });
+}
+```
 
 ## Listing our tokens
 index.js
