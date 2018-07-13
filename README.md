@@ -1,12 +1,11 @@
-# status-dapp-workshop-mexico
-DApp to be used during Mexico workshop on July 6th
+# Create a ERC721 marketplace using Embark
 
-Remember to fork this repository / Recuerda crear un fork de este repositorio
+Remember to fork this repository
 
 ```
 npm install -g embark
-git clone https://github.com/GITHUB-USERNAME/status-dapp-workshop-mexico.git
-cd status-dapp-workshop-mexico
+git clone https://github.com/GITHUB-USERNAME/embark-tutorial-erc721.git
+cd embark-tutorial-erc721
 npm install
 ```
 
