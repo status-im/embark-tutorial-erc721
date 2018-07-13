@@ -256,6 +256,7 @@ We will add this behavior to the WithdrawBalance component. Open the file `app/j
 ```
 import EmbarkJS from 'Embark/EmbarkJS';
 import web3 from "Embark/web3";
+import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 ```
 
 The balance needs to be loaded when the page loads. This should be done in `componentDidMount()`. Remember to use `EmbarkJS.onReady((err) => {})` to be able to interact with the EVM as soon as the component mounts.
