@@ -5,9 +5,11 @@ A functionality a token marketplace requires is the ability to list and sell you
 
 This approval process will be controlled via the toggle above our spaceships section, and this functionality shall be code on `app/js/components/shipList.js`.
 
-Start by importing our escrow contract `SpaceshipMarketplace`:
+Start by importing our escrow contract `SpaceshipMarketplace`, `EmbarkJS` and our `SpaceshipToken` contract:
 
 ```
+import EmbarkJS from 'Embark/EmbarkJS';
+import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 ```
 
@@ -76,6 +78,7 @@ componentDidMount(){
 }
 ```
 
+[IMAGE_HERE]
 
 Finally, to sell our tokens, we need to edit the file `app/js/components/ship.js` to import our `SpaceshipMarketplace` contract and add the implementation of the `sellShip` method.
 
@@ -142,7 +145,7 @@ _loadMarketPlace = async () => {
                 price: sale.price,
                 id: sale.spaceshipId,
                 saleId: i,
-                ..._info
+                ...info
             };
             list.push(ship);
         }
@@ -196,7 +199,7 @@ buyFromMarket = () => {
 ```
 
 ## Other features
-Congrats! you have implemented all the features of this tutorial! However, there's still some missing functionality on this DApp that would be great to build, and probably make sense to include, such as: Allow the user to cancel sales, to tranfer tokens to other addresses, trading tokens offchain (maybe through Whisper?), etc. This tutorial covers most of the patterns required to implement them, so if you're looking for an extra challenge, you can have fun building them!
+Congrats! you have implemented all the features of this tutorial! However, there's still some missing functionality on this DApp that would be great to build, and probably make sense to include, such as: Add validations to input fields, warning messages, Allow the user to cancel sales, to tranfer tokens to other addresses, trading tokens offchain (maybe through Whisper?), etc. This tutorial covers most of the patterns required to implement them, so if you're looking for an extra challenge, you can have fun building them!
 
 ## Conclusion
 
