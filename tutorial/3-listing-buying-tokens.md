@@ -1,7 +1,7 @@
 ## Listing the newly minted tokens
 As you can see when you browser the DApp at this point, we show a placeholder spaceship, just so we can see how a token would look like when all the functionality of the DApp is implemented.
 
-[IMAGE_HERE]
+![Placeholder](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/shipPlaceholder.png)
 
 Let's start by removing it. Open the file `app/js/index.js` and remove the constant `myShip` from `_loadMyShips()`. You also need to remove it from the `list` array.
 
@@ -94,9 +94,10 @@ _loadShipsForSale = async () => {
 }
 ```
 
-[IMAGE_HERE]
+![Spaceship](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/ship.png)
 
-You may have noticed that the ships that you create are displayed in the UI, however, they lack their image, and the prices are not formatted correctly. We need to work on the file `app/js/components/ship.js` for this.
+
+You may have noticed that the ships that you create are displayed in the UI, however, the image used is not the one we uploaded, and the prices are not formatted correctly. We need to work on the file `app/js/components/ship.js` for this.
 
 As usual, start by importing `EmbarkJS` and `web3`, as well as our `SpaceshipToken`
 
@@ -130,7 +131,6 @@ _loadAttributes(){
 
 The content returned is a string, so, before we can access the image attribute, we need to convert this string back to a JSON object using `JSON.parse(string)`. Once you do this, you are able to set the image state, and after reloading the DApp in the browser, the image should load.
 
-
 ```
 _loadAttributes(){
     const metadataHash = web3.utils.toAscii(this.props.metadataHash);
@@ -151,7 +151,7 @@ const formattedPrice = !wallet ? web3.utils.fromWei(price, "ether") : '';
 
 ## Buying the tokens
 
-[IMAGE_HERE]
+![Buy](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/loadedShipImage.png)
 
 As you can see, each spaceship has a buy button. Clicking this button should generate a transaction in which we send the value in wei of the token, and this token is transferred to our address. The `SpaceshipToken` contract has a `buySpaceship` function we can use for such purposes. 
 
@@ -281,7 +281,7 @@ _getBalance(){
 }
 ```
 
-[IMAGE_HERE]
+![Balance](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/balance.png)
 
 The withdraw button calls the `handleClick(e)` method, but at the moment it does not do anything. For implementing it's functionality we will use the function `withdrawBalance` of the `SpaceshipToken` contract.
 The process is similar to what we have seen before: estimate gas before sending the transaction.
