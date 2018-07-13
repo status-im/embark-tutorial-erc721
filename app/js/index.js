@@ -111,7 +111,7 @@ class App extends Component {
         const { isOwner, hidePanel, shipsForSale, myShips, marketPlaceShips } = this.state;
 
         return (
-        web3 == undefined 
+        typeof(web3) === "undefined" && typeof(EmbarkJS) !== "undefined" 
         ? <Fragment>
             <h3>No web3 provider was detected</h3>
             <p>The easiest way to interact with this DApp is using Status:</p>
