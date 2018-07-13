@@ -136,7 +136,6 @@ After estimating gas, proceed to create the transaction by returning the `send` 
 
     // Reset form
     this.setState({
-    fileToUpload: [],
     energy: '',
     lasers: '',
     shield: '',
@@ -192,7 +191,6 @@ handleClick(e){
     .then(receipt => {
       console.log(receipt);
       this.setState({
-        fileToUpload: [],
         energy: '',
         lasers: '',
         shield: '',

@@ -54,17 +54,20 @@ _loadShipsForSale = async () => {
 
     const total = await shipsForSaleN().call();
     if(total){
-        for (let i = total-1; i >= 0; i--) {
+        for (let i = 0; i < total; i++) {
             const id = await shipsForSale(i).call();
-            const info = await spaceships(shipId).call();
-            const price = await spaceshipPrices(shipId).call();
+            const info = await spaceships(id).call();
+            const price = await spaceshipPrices(id).call();
+
+            console.log(id);
+            console.log(info);
+            console.log(price);
         }
     }
 }
 ```
 
 The spaceship object for the store section requires the following attributes: `id`, `price`, `metadataHash`, `lasers`, `shield`, `energy`, and since the last four are part of the `info` variable, we can use the spread operator (...) to avoid having to write each attribute individually. Once you create the object, add it to `list`, and update the `shipsForSale` state with this array:
-
 
 ```
 _loadShipsForSale = async () => {
@@ -74,20 +77,20 @@ _loadShipsForSale = async () => {
 
     const total = await shipsForSaleN().call();
     if(total){
-        for (let i = total-1; i >= 0; i--) {
+        for (let i = 0; i < total; i++) {
             const id = await shipsForSale(i).call();
-            const info = await spaceships(shipId).call();
-            const price = await spaceshipPrices(shipId).call();
+            const info = await spaceships(id).call();
+            const price = await spaceshipPrices(id).call();
 
             const ship = {
                 id,
                 price,       
-                ..._info
+                ...info
             };
             list.push(ship);
         }
     }
-    this.setState({shipsForSale: list});
+    this.setState({shipsForSale: list.reverse()});
 }
 ```
 
@@ -223,7 +226,7 @@ This functionallity is very similar to loading the ships for sale. In fact you m
 Open the file `app/js/index.js` and implement the method `_loadMyShips`: 
 
 ```
- _loadMyShips = async () => {
+_loadMyShips = async () => {
     const { balanceOf, tokenOfOwnerByIndex, spaceships } = SpaceshipToken.methods;
     
     const list = [];
@@ -232,7 +235,7 @@ Open the file `app/js/index.js` and implement the method `_loadMyShips`:
     if(total){
         for (let i = total-1; i >= 0; i--) {
             const id = await tokenOfOwnerByIndex(web3.eth.defaultAccount, i).call();
-            const info = await spaceships(myShipId).call();
+            const info = await spaceships(id).call();
     
             const ship = {
               id,
@@ -347,7 +350,20 @@ handleClick(e){
 ## Display the mint form only if we are the owners of the contract
 One thing you may have noticed is that the minting form shows up always even if you're not the owner of the contract. Our `SpaceshipToken` contract inherits from `Owned` which adds an `owner()` method that we can use to determine if the account browsing the dapp is the owner of the contract
 
-For this, let's go back to `app/js/index.js`. The method `_isOwner` needs to be called when the component mounts, due to it being a good place to load data from a remote endpoint (in this case, the EVM).
+For this, let's go back to `app/js/index.js`. The method `_isOwner` needs to be called when the component mounts, due to it being a good place to load data from a remote endpoint (in this case, the EVM). Also, it's a good idea to set the default state to `false` in the constructor
+
+```
+constructor(props) {
+    super(props);
+    this.state = {
+        isOwner: false,
+        hidePanel: false,
+        shipsForSale: [],
+        myShips: [],
+        marketPlaceShips: []
+    }
+}
+```
 
 ```
 componentDidMount(){

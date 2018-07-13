@@ -1,8 +1,5 @@
-import EmbarkJS from 'Embark/EmbarkJS';
-import web3 from "Embark/web3"
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import { Button, Grid, Row, Col } from 'react-bootstrap';
 
 class WithdrawBalance extends Component {
