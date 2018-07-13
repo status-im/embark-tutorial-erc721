@@ -24,13 +24,13 @@ class ShipList extends Component {
   }
 
   enableMarketplace = () => {
-    // TODO: esta funcion la llama el toggle de mas abajo cuando se clickea
-    // Debe setear siempre el valor de 'salesEnabled'
-    // Las siguientes lineas solo muestran el funcionamiento en el UI
-    // pero debe implementarse creando una transaccion
+    // ============== BEGIN: Function implementation here ================ //
+    // TODO: this function is called when we click on the toggle.
+    // Must set the state this.state.salesEnabled
     this.setState({isSubmitting: true});
     this.setState({salesEnabled: !this.state.salesEnabled});
     this.setState({isSubmitting: false});
+    // ============== END: Function implementation here   ================ //
   }
 
   render = () => {

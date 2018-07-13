@@ -40,14 +40,16 @@ class Ship extends Component {
     }
 
     sellShip = () => {
-        // TODO: vender una nave para que otro usuario la pueda comprar
-        // En props esta el atributo 'id', que podemos usar para determinar el id del token
-        // El precio esta en el estado this.state.sellPrice
-        
+        // ============== BEGIN: Function implementation here ================ //
+
+        // TODO: Sell a ship, using this.props.id and this.state.sellPrice
+
         this.setState({isSubmitting: true});
-        // Llamar la siguiente funcion para refrescar las listas
-        this.props.onAction();
+        this.props.onAction(); // Refresh token lists 
         this.setState({isSubmitting: false});
+
+        // ============== END: Function implementation here   ================ //
+
     }
 
     buyFromStore = () => {
@@ -61,13 +63,14 @@ class Ship extends Component {
     }
 
     buyFromMarket = () => {
-        // TODO: comprar tokens puestos a la venta por otra persona
-        // En props esta el 'saleId' y 'price' para poder comprarlo
+        // ============== BEGIN: Function implementation here ================ //
+
+        // TODO: Buy a token from the marketplace using this.props.saleId, and this.props.price
         
         this.setState({isSubmitting: true});
-        // Llamar la siguiente funcion para refrescar las listas
         this.props.onAction();
         this.setState({isSubmitting: false});
+        // ============== END: Function implementation here   ================ //
     }
 
     render(){
