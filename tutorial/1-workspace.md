@@ -51,5 +51,4 @@ npm install
 ```
 
 Once all the packages are installed, execute embark via `embark run` in the same directory. You should see the following screen:
-
-[IMAGE_HERE]
+![Dashboard](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/dashboard.png)
