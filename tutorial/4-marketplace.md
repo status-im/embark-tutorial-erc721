@@ -79,37 +79,44 @@ import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 
 ## Listing marketplace tokens
 
-Our DApp doesn't show the any ships in the marketplace. We need to edit `app/js/index.js` to include this functionality. This file doesn't have a reference to the `SpaceshipMarketplace` contract, you need to import it:
+Our DApp doesn't show the any ships in the marketplace yet. We need to edit `app/js/index.js` to include this functionality. Import the `SpaceshipMarketplace` contract since this file doesn't have a reference to it:
 
 ```
 import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 ```
 
+We'll implement the `_loadMarketPlace` method. This is similar to the other listing methods, the main difference is that we use the `SpaceshipMarketplace` contract functions:
 
-    _loadMarketPlace = async () => {
-        const { nSale, sales, saleInformation } = SpaceshipMarketplace.methods;
-        const { spaceships } = SpaceshipToken.methods;
-   
-        const total = await nSale().call();
-        const list = [];
-        if(total){
-          for (let i = total-1; i >= 0; i--) {
+- `nSale` to obtain the number of ships for sale in the marketplace
+- `sales` which receives an index and returns the sale information (the token id, the owner, and price)
+
+```
+_loadMarketPlace = async () => {
+    const { nSale, sales } = SpaceshipMarketplace.methods;
+    const { spaceships } = SpaceshipToken.methods;
+
+    const list = [];
+
+    const total = await nSale().call();
+    if(total){
+        for (let i = total-1; i >= 0; i--) {
             const sale = await sales(i).call();
-            const _info = await spaceships(sale.spaceshipId).call();
+            const info = await spaceships(sale.spaceshipId).call();
             const ship = {
-              owner: sale.owner,
-              price: sale.price,
-              id: sale.spaceshipId,
-              saleId: i,
-              ..._info
+                owner: sale.owner,
+                price: sale.price,
+                id: sale.spaceshipId,
+                saleId: i,
+                ..._info
             };
-          
             list.push(ship);
-          }
         }
-        
-        this.setState({marketPlaceShips: list.reverse()});
     }
+    this.setState({marketPlaceShips: list.reverse()});
+}
+```
+
+Notice that we include new attributes in our list: the owner, and the saleId which is used in the next step, and also, `this.state.marketPlaceShips` is used to store the list of spaceships in the marketplace
 
 ## Buying tokens from the marketplace
 This functionality is very similar to buying the tokens from the store.
@@ -124,7 +131,7 @@ buyFromMarket = () => {
 }
 ```
 
-The next step as you may have guessed, is to estimate gas costs and sending the transaction with extra gas: 
+The next step as you may have guessed already, is to estimate gas costs and sending the transaction with extra gas: 
 
 ```
 buyFromMarket = () => {
@@ -152,7 +159,7 @@ buyFromMarket = () => {
 ```
 
 ## Other features
-Congrats! you have implemented all the features of this tutorial! However, there's still some missing functionality on this DApp that would be great to build, and probably make sense to include, such as: Allow the user to cancel sales, to tranfer tokens to other addresses, trading tokens offchain (maybe through Whisper?), etc. This tutorial covers most of the patterns required to implement them, so if you're looking for an extra challenge, you can have fun building these!
+Congrats! you have implemented all the features of this tutorial! However, there's still some missing functionality on this DApp that would be great to build, and probably make sense to include, such as: Allow the user to cancel sales, to tranfer tokens to other addresses, trading tokens offchain (maybe through Whisper?), etc. This tutorial covers most of the patterns required to implement them, so if you're looking for an extra challenge, you can have fun building them!
 
 ## Conclusion
 
