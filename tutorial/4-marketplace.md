@@ -1,81 +1,116 @@
 ## Selling our tokens
+A functionality a token marketplace requires is the ability to list and sell your tokens and also be able to buy them. ERC721 and tokens in general require an approval to be able to transfer them. And since we're going to use a different contract to act as an escrow for our buys/sell, we need to allow the user to approve this contract as a temporary owner of our tokens to sell.
 
-shiplist.js
+[IMAGE_HERE]
+
+This approval process will be controlled via the toggle above our spaceships section, and this functionality shall be code on `app/js/components/shipList.js`.
+
+Start by importing our escrow contract `SpaceshipMarketplace`:
+
+```
 import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
+```
 
-  componentDidMount(){
-    EmbarkJS.onReady((err) => {
-        // Al cargar la lista de naves, determinamos si estan aprobadas para la venta
-        const { isApprovedForAll } = SpaceshipToken.methods;
-        isApprovedForAll(web3.eth.defaultAccount, SpaceshipMarketplace.options.address)
-            .call()
-            .then(isApproved => {
-                this.setState({salesEnabled: isApproved});
-            });
-    });
-  }
+We need to work now on the `enableMarketplace()` method that is triggered when you click on the toggle button. Use the function `setApprovalForAll` of the `SpaceshipToken`. This function will receive the address of the `SpaceshipMarketplace` contract and will let it act as an operator of our tokens. As usual when sending transactions, we need to estimate the gas first:
 
-  enableMarketplace = () => {
-    const { setApprovalForAll } = SpaceshipToken.methods;
-
+```
+enableMarketplace = () => {
     this.setState({isSubmitting: true});
+
+    const { setApprovalForAll } = SpaceshipToken.methods;
 
     const toSend = setApprovalForAll(SpaceshipMarketplace.options.address, !this.state.salesEnabled);
 
     toSend.estimateGas()
-        .then(estimatedGas => {
-            return toSend.send({from: web3.eth.defaultAccount,
-                                gas: estimatedGas + 1000});
-        })
-        .then(receipt => {
-            this.setState({salesEnabled: !this.state.salesEnabled});
-            console.log(receipt);
-        })
-        .catch((err) => {
-            console.error(err);
-            // TODO: show error blockchain
-            
-        })
-        .finally(() => {
-          this.setState({isSubmitting: false});
+    .then(estimatedGas => {
+        console.log(estimatedGas);
+    })
+    .catch((err) => {
+        console.error(err);       
+    })
+    .finally(() => {
+        this.setState({isSubmitting: false});
+    });
+}
+```
+
+After estimating the gas cost, we may now send the transaction. We will set the state `salesEnabled` to the inverse of its current value (to represent a toggle click):
+
+```
+enableMarketplace = () => {
+    this.setState({isSubmitting: true});
+
+    const { setApprovalForAll } = SpaceshipToken.methods;
+
+    const toSend = setApprovalForAll(SpaceshipMarketplace.options.address, !this.state.salesEnabled);
+
+    toSend.estimateGas()
+    .then(estimatedGas => {
+        return toSend.send({gas: estimatedGas + 1000});
+    })
+    .then(receipt => {
+        this.setState({salesEnabled: !this.state.salesEnabled});
+        console.log(receipt);
+    })
+    .catch((err) => {
+        console.error(err);       
+    })
+    .finally(() => {
+        this.setState({isSubmitting: false});
+    });
+}
+```
+
+The next step is to set the correct toggle state when we load the page. We will use the `isApprovedForAll` to query the approval state from the contract, and this will be done as soon as the component mounts and `EmbarkJS` finish loading:
+
+```
+componentDidMount(){
+    EmbarkJS.onReady((err) => {
+        const { isApprovedForAll } = SpaceshipToken.methods;
+        isApprovedForAll(web3.eth.defaultAccount, SpaceshipMarketplace.options.address)
+        .call()
+        .then(isApproved => {
+            this.setState({salesEnabled: isApproved});
         });
-  }
+    });
+}
+```
 
 
-ship.js
+Finally, to sell our tokens, we need to edit the file `app/js/components/ship.js` to import our `SpaceshipMarketplace` contract and add the implementation of the `sellShip` method.
 
+```
 import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
+```
 
-    sellShip = () => {
-        const { forSale } = SpaceshipMarketplace.methods;
-        const { sellPrice } = this.state;
-        const { id } = this.props;
+The function you need to use from the `SpaceshipMarketplace` contract is `forSale`, which receives a token id (you can get it from `this.props.id`), and also a price (`this.state.sellPrice`). Remember that in the UI we're introducing the sell price as ether, and we need to convert it to wei:
 
-        this.setState({isSubmitting: true});
+```
+sellShip = () => {
+    const { forSale } = SpaceshipMarketplace.methods;
+    const { sellPrice } = this.state;
+    const { id } = this.props;
 
-        const toSend = forSale(id, web3.utils.toWei(sellPrice, 'ether'))
+    this.setState({isSubmitting: true});
 
-        toSend.estimateGas()
-            .then(estimatedGas => {
-                return toSend.send({from: web3.eth.defaultAccount,
-                                    gas: estimatedGas + 1000});
-            })
-            .then(receipt => {
-                console.log(receipt);
-                
-                this.props.onAction();
+    const toSend = forSale(id, web3.utils.toWei(sellPrice, 'ether'))
 
-                // TODO: show success
-                return true;
-            })
-            .catch((err) => {
-                console.error(err);
-                // TODO: show error blockchain
-            })
-            .finally(() => {
-                this.setState({isSubmitting: false});
-            });
-    }
+    toSend.estimateGas()
+    .then(estimatedGas => {
+        return toSend.send({gas: estimatedGas + 1000});
+    })
+    .then(receipt => {
+        console.log(receipt);
+        this.props.onAction(); // Update ship lists
+    })
+    .catch((err) => {
+        console.error(err);
+    })
+    .finally(() => {
+        this.setState({isSubmitting: false});
+    });
+}
+```
 
 ## Listing marketplace tokens
 
@@ -117,6 +152,8 @@ _loadMarketPlace = async () => {
 ```
 
 Notice that we include new attributes in our list: the owner, and the saleId which is used in the next step, and also, `this.state.marketPlaceShips` is used to store the list of spaceships in the marketplace
+
+[IMAGE_HERE]
 
 ## Buying tokens from the marketplace
 This functionality is very similar to buying the tokens from the store.
