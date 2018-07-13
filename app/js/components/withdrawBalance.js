@@ -16,35 +16,38 @@ class WithdrawBalance extends Component {
   }
 
   componentDidMount(){
-    // TODO: Al cargar el componente, debemos obtener el balance
-    // podemos hacerlo llamando a this._getBalance();
+    // ============== BEGIN: Function implementation here ================ //
+    this._getBalance();
+    // ============== END: Function implementation here   ================ //
   }
 
   _getBalance(){
-    // TODO: implementar, el estado a actualizar es 'balance'
-    
+    // ============== BEGIN: Function implementation here ================ //
+    // TODO: Update this.state.balance
+    // ============== END: Function implementation here   ================ //
+
   }
 
   handleClick(e){
+    // ============== BEGIN: Function implementation here ================ //
     e.preventDefault();
 
-    // TODO: este metodo se debe llamar al hacer click en retirar fondos
-    // Debe extraer el balance total del contrato del token, y actualizar el UI
-    // para mostrar que no hay balance disponible
+    // TODO: this method needs to extract the balance from the contract
+    // and update the UI to show the new balance
 
     this.setState({isSubmitting: true});
     this._getBalance();
     this.setState({isSubmitting: false});
+    // ============== END: Function implementation here   ================ //
   }
 
   render(){
     const { balance } = this.state;
     return <Grid>
-        <h4>Fondos</h4>
         <Row>
           <Col sm={3} md={3}>
-            Balance Disponible: <b>{ balance } Ξ</b>              
-            <Button onClick={(e) => this.handleClick(e)} disabled={balance == "0"}>Retirar</Button>
+            Balance: <b>{ balance } Ξ</b>              
+            <Button onClick={(e) => this.handleClick(e)} disabled={balance == "0"}>Withdraw</Button>
           </Col>
         </Row>
       </Grid>;

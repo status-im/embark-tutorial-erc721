@@ -23,17 +23,16 @@ class Ship extends Component {
     }
 
     componentDidMount(){
-        // TODO: cuando se carga el componente se deben buscar los atributos del token
+        // ============== BEGIN: Function implementation here ================ //
         this._loadAttributes();
+        // ============== END: Function implementation here   ================ //
     }
 
     _loadAttributes(){
-        // TODO: implementar carga de atributos aca
-        // El unico atributo interesante es la imagen
-        // Guardar el url en this.state.image
-        
-        // Ejemplo
+        // ============== BEGIN: Function implementation here ================ //
+        // TODO: the only attribute we are interested to load is the image
         this.setState({image: "./images/sampleShip.png"});
+        // ============== END: Function implementation here   ================ //
     }
 
     showSellForm = (show) => {
@@ -52,13 +51,13 @@ class Ship extends Component {
     }
 
     buyFromStore = () => {
-        // TODO: comprar token recien creado
-        // En props esta el atributo 'id' y 'price', que podemos usar para determinar el id del token
-
+        // ============== BEGIN: Function implementation here ================ //
+        // In props you can find the attributes 'id' and 'price' required for buying the token
         this.setState({isSubmitting: true});
-        // Llamar la siguiente funcion para refrescar las listas
-        this.props.onAction();
+        this.props.onAction(); // This function needs to be called to reload the lists of spaceships
         this.setState({isSubmitting: false});
+        // ============== END: Function implementation here   ================ //
+
     }
 
     buyFromMarket = () => {
@@ -86,14 +85,14 @@ class Ship extends Component {
             <img src={image} />
             <br />
             <ul>
-                <li title="Energia"><i className="fa fa-dashboard" aria-hidden="true"></i> {energy}</li>
+                <li title="Energy"><i className="fa fa-dashboard" aria-hidden="true"></i> {energy}</li>
                 <li title="Lasers"><i className="fa fa-crosshairs" aria-hidden="true"></i> {lasers}</li>
-                <li title="Escudo"><i className="fa fa-shield" aria-hidden="true"></i> {shield}</li>
+                <li title="Shield"><i className="fa fa-shield" aria-hidden="true"></i> {shield}</li>
             </ul>
             { !wallet || marketplace
-                ? <Button disabled={isSubmitting} bsStyle="success" onClick={marketplace ? this.buyFromMarket : this.buyFromStore}>Comprar</Button> 
+                ? <Button disabled={isSubmitting} bsStyle="success" onClick={marketplace ? this.buyFromMarket : this.buyFromStore}>Buy</Button> 
                 : (!showSellForm && salesEnabled
-                    ? <Button bsStyle="success" className="hiddenOnLeave" onClick={e => { this.showSellForm(true) }}>Vender</Button>
+                    ? <Button bsStyle="success" className="hiddenOnLeave" onClick={e => { this.showSellForm(true) }}>Sell</Button>
                     : '')
              }
 
@@ -106,8 +105,8 @@ class Ship extends Component {
                             onChange={(e) => this.handleChange('sellPrice', e.target.value)} />
                             <InputGroup.Addon>Ξ</InputGroup.Addon>
                     </InputGroup>
-                    <Button disabled={isSubmitting} bsStyle="success" onClick={this.sellShip}>Vender</Button>
-                    <Button disabled={isSubmitting} onClick={e => { this.showSellForm(false) }}>Cancelar</Button>
+                    <Button disabled={isSubmitting} bsStyle="success" onClick={this.sellShip}>Sell</Button>
+                    <Button disabled={isSubmitting} onClick={e => { this.showSellForm(false) }}>Cancel</Button>
                 </Fragment> : ''
             }
 

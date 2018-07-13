@@ -91,6 +91,8 @@ _loadShipsForSale = async () => {
 }
 ```
 
+[IMAGE_HERE]
+
 You may have noticed that the ships that you create are displayed in the UI, however, they lack their image, and the prices are not formatted correctly. We need to work on the file `app/js/components/ship.js` for this.
 
 As usual, start by importing `EmbarkJS` and `web3`, as well as our `SpaceshipToken`
@@ -101,33 +103,41 @@ import web3 from "Embark/web3";
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 ```
 
+The best place to load the image is when the component mounts. We will use `EmbarkJS.onReady` to invoke the `_loadAttributes` method
+
+```
+componentDidMount(){
+    EmbarkJS.onReady((err) => {
+        this._loadAttributes();
+    });
+}
+```
+
+The image URL is part of the token attributes stored in IPFS. We need to use the method `EmbarkJS.Storage.get` to obtain the content of the JSON object. We can access the IPFS hash via `this.props.metadataHash`. Remember we store this information in the contract as a `bytes` data type so we need to convert it back to string:
+
+```
+_loadAttributes(){
+    const metadataHash = web3.utils.toAscii(this.props.metadataHash);
+    EmbarkJS.Storage.get(metadataHash)
+    .then(content => {
+            console.log(content);
+    });
+}
+```
+
+The content returned is a string, so, before we can access the image attribute, we need to convert this string back to a JSON object using `JSON.parse(string)`. Once you do this, you are able to set the image state, and after reloading the DApp in the browser, the image should load.
 
 
-TODO: 
-
-
-    componentDidMount(){
-        EmbarkJS.onReady((err) => {
-          this._loadAttributes();
-        });
-    }
-
-    _loadAttributes(){
-        // Cargar los atributos involucra leer la metadata
-        EmbarkJS.Storage.get(web3.utils.toAscii(this.props.metadataHash))
-            .then(content => {
-                const jsonMetadata = JSON.parse(content);
-
-                // Podemos usar este metodo
-                const _url = EmbarkJS.Storage.getUrl(jsonMetadata.imageHash);
-
-                // o leer el url que grabamos en la metadata
-                // const _url = jsonMetadata.image
-
-                this.setState({image: _url})
-            });
-    }
-
+```
+_loadAttributes(){
+    const metadataHash = web3.utils.toAscii(this.props.metadataHash);
+    EmbarkJS.Storage.get(metadataHash)
+    .then(content => {
+        const jsonMetadata = JSON.parse(content);
+        this.setState({image: jsonMetadata.image});
+    });
+}
+```
 
 Finally, to format the price, on the `render` method, we will update the constant `formattedPrice` to use `web3.utils.fromWei` and convert the value from wei to ether as expected:
 
@@ -347,7 +357,6 @@ componentDidMount(){
     });
 }
 ```
-
 
 ```
 _isOwner(){

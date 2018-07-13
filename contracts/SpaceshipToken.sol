@@ -4,11 +4,10 @@ import "zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
-/// @title Contrato base para Mexico Workshop
-/// @dev En Status tambien hablamos espanol ;)
+/// @title SpaceshipToken
 contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
 
-    // Estructura que representa nuestra nave spacial
+    // Struct with spaceship attributes
     struct Spaceship {
         bytes metadataHash; // IPFS Hash 
         uint8 energy;
@@ -16,19 +15,19 @@ contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
         uint8 shield;
     }
 
-    // Todas las naves que se han creado.
+    // All the spaceships minted
     Spaceship[] public spaceships;
 
-    // Precio de las naves
+
     mapping(uint => uint) public spaceshipPrices;
     uint[] public shipsForSale;
     mapping(uint => uint) public indexes; // shipId => shipForSale
 
-    /// @notice Crear un tocken
-    /// @param _metadataHash IPFS hash que contiene la metadata del token
-    /// @param _energy Atributo: Energia
-    /// @param _lasers Atributo: Lasers
-    /// @param _price Precio de venta del token
+    /// @notice Mint a token
+    /// @param _metadataHash IPFS hash with the token metadata
+    /// @param _energy Attribute: Energy
+    /// @param _lasers Attribute: Lasers
+    /// @param _price Sale price in Wei
     function mint(bytes _metadataHash,
                   uint8 _energy, 
                   uint8 _lasers, 
@@ -51,64 +50,59 @@ contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
         shipsForSale.push(spaceshipId);
         indexes[spaceshipId] = shipsForSale.length - 1;
 
-        // _mint es una funcion del contrato ERC721Token que genera el NFT
-        // El contrato sera dueno de las naves que se generen
+        // _mint is a function part of ERC721Token that generates the NFT
+        // The contract will own the newly minted tokens
         _mint(address(this), spaceshipId);
     }
 
-    /// @notice Obtener cantidad de naves a la venta
-    /// @return Cantidad
+    /// @notice Get number of spaceships for sale
     function shipsForSaleN() public view returns(uint) {
         return shipsForSale.length;
     }
 
-    /// @notice Comprar nave
-    /// @param _spaceshipId Id del token a comprar
+    /// @notice Buy spaceship
+    /// @param _spaceshipId TokenId
     function buySpaceship(uint _spaceshipId) public payable {
-        // Solo se pueden comprar las naves cuyo dueno sea el contrato
+        // You can only buy the spaceships owned by this contract
         require(ownerOf(_spaceshipId) == address(this));
 
-        // Se debe enviar al menos el precio de la nave
-        require(msg.value != 0);
+        // Value sent should be at least the spaceship price
+        require(msg.value >= spaceshipPrices[_spaceshipId]);
 
-        // Approvamos directamente para evitar tener que crear una transaccion extra
-        // y luego enviamos la nave a quien origino la transaccion
+        // We approve the transfer directly to avoid creating two trx
+        // then we send the token to the sender
         tokenApprovals[_spaceshipId] = msg.sender;
         safeTransferFrom(address(this), msg.sender, _spaceshipId);
 
-        // La eliminamos de la lista para venta
-        // Esto se ve un poco mas complicado de lo necesario, 
-        // Pero es para borrar elementos del arreglo de forma eficiente
+        // Delete the token from the list of tokens for sale
         uint256 replacer = shipsForSale[shipsForSale.length - 1];
         uint256 pos = indexes[_spaceshipId];
         shipsForSale[pos] = replacer;
         indexes[replacer] = pos;
         shipsForSale.length--;
         
-        // Reembolsamos el sobrante
         uint refund = msg.value - spaceshipPrices[_spaceshipId];
         if (refund > 0)
             msg.sender.transfer(refund);
     }
 
-    /// @notice Retirar balance por compras hechas
+    /// @notice Withdraw sales balance
     function withdrawBalance() public onlyOwner {
         owner.transfer(address(this).balance);
     }
 
-    /// @notice Obtener metadata
-    /// @param _spaceshipId Id del token
-    /// @return Direccion desde donde obtener la metadata
+    /// @notice Get Metadata URI
+    /// @param _spaceshipId TokenID
+    /// @return IPFS URL of the metadata
     function tokenURI(uint256 _spaceshipId) public view returns (string) {
         Spaceship storage s = spaceships[_spaceshipId];
         return strConcat("https://ipfs.io/ipfs/", string(s.metadataHash));
     }
 
-    /// @notice Concatenar strings
-    /// @dev La concatenacion por strings por ahora debe hacerse manual o usando librerias
-    /// @param _a Primer string
-    /// @param _b Segundo string
-    /// @return String concatenado
+    /// @notice Concatenate strings
+    /// @param _a First string
+    /// @param _b Second string
+    /// @return _a+_b
     function strConcat(string _a, string _b) private returns (string) {
         bytes memory _ba = bytes(_a);
         bytes memory _bb = bytes(_b);

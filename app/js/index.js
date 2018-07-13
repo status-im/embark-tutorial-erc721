@@ -44,18 +44,19 @@ class App extends Component {
     }
 
     _loadMyShips = async () => {
-        // TODO: aqui nos interesa cargar la lista de naves que posee el usuario
-        // se espera un array de objetos en el estado myShips
-        // cada objeto debe tener los siguientes atributos:
+        // ============== BEGIN: Function implementation here ================ //    
+
+        // TODO: We want to load the lists of ships a user has
+        // this.state.myShips expects an array of objects with these attributes:
         // {
-        //   id: "id del token",
-        //   energy: "Atributo del token",
-        //   lasers: "Atributo del token",
-        //   shield: "Atributo del token",
-        //   metadataHash: "Atributo del token",
+        //   id: "token Id",
+        //   energy: "token attribute",
+        //   lasers: "token attribute",
+        //   shield: "token attribute",
+        //   metadataHash: "token attribute",
         // }
         
-        // Ejemplo: 
+        // Example: 
         const myShip = {
             id: 1,
             energy: 10,
@@ -64,24 +65,27 @@ class App extends Component {
             metadataHash: "METADATA"
         };
         const list = [ myShip ];
-        this.setState({myShips: list.reverse()});
+        this.setState({myShips: list});
+
+        // ============== END: Function implementation here   ================ //    
     }
 
     _loadShipsForSale = async () => {
-        // TODO: aqui nos interesa cargar la lista de naves a la venta cuando generamos el token
-        // se espera un array de objetos en el estado shipsForSale
-        // cada objeto debe tener los siguientes atributos:
+        // ============== BEGIN: Function implementation here ================ //    
+
+        // TODO: load the list of ships for sale 
+        // this.state.shipsForSale expects an array of objects with these attributes:
         // {
-        //   price: "precio de venta",
-        //   id: "id del token",
-        //   energy: "Atributo del token",
-        //   lasers: "Atributo del token",
-        //   shield: "Atributo del token",
-        //   metadataHash: "Atributo del token",
+        //   id: "token Id",
+        //   energy: "token attribute",
+        //   lasers: "token attribute",
+        //   shield: "token attribute",
+        //   metadataHash: "token attribute",
+        //   price: "token price"
         // }
 
         let list = [];
-        this.setState({shipsForSale: list.reverse()});
+        this.setState({shipsForSale: list});
     }
 
     _loadMarketPlace = async () => {
