@@ -1,10 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
-import EmbarkJS from 'Embark/EmbarkJS';
 import Ship from './ship';
 import EnableSales from './enableSales';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
-import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 
 class ShipList extends Component {
 
@@ -40,7 +37,7 @@ class ShipList extends Component {
     return <div id={id}>
       <h3>{title}</h3> 
       { wallet ? <EnableSales isSubmitting={this.state.isSubmitting} handleChange={this.enableMarketplace} salesEnabled={this.state.salesEnabled} /> : ''}
-      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={i} marketplace={marketplace} {...ship} />) }
+      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={ship.id} marketplace={marketplace} {...ship} />) }
       { list.length == 0 
         ? <p>No hay naves disponibles</p> 
         : ''

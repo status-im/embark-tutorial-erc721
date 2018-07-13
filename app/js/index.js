@@ -75,16 +75,7 @@ class App extends Component {
         //   metadataHash: "Atributo del token",
         // }
 
-        // Ejemplo: 
-        const myShip = {
-            id: 1,
-            price: 0.1,
-            energy: 10,
-            lasers: 5,
-            shield: 7,
-            metadataHash: "METADATA"
-        };
-        const list = [myShip];
+        const list = [];
         this.setState({shipsForSale: list.reverse()});
     }
 
@@ -102,18 +93,8 @@ class App extends Component {
         //   shield: "Atributo del token",
         //   metadataHash: "Atributo del token",
         // }
-        
-        // Ejemplo: 
-        const myShip = {
-            id: 1,
-            owner: "0xabc",
-            price: 0.1,
-            energy: 10,
-            lasers: 5,
-            shield: 7,
-            metadataHash: "METADATA"
-        };
-        const list = [myShip];
+
+        const list = [];
         this.setState({marketPlaceShips: list.reverse()});
     }
 
@@ -121,7 +102,7 @@ class App extends Component {
         const { isOwner, hidePanel, shipsForSale, myShips, marketPlaceShips } = this.state;
 
         return (
-        web3 == undefined 
+        typeof(web3) === "undefined" && typeof(EmbarkJS) !== "undefined" 
         ? <Fragment>
             <h3>No se detectó ningun proveedor de web3</h3>
             <p>La forma mas simple de interactuar con esta DApp es a traves de Status:</p>

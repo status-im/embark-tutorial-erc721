@@ -1,4 +1,3 @@
-import EmbarkJS from 'Embark/EmbarkJS';
 import React from 'react';
 import Toggle from 'react-toggle'
 

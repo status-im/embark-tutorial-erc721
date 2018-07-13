@@ -32,39 +32,18 @@ module.exports = {
     ],
     gas: "auto",
     contracts: {
+      // Open zepellin
       "AddressUtils": { "deploy": false },
       "SafeMath": { "deploy": false },
       "ERC721Token": { "deploy": false },
       "ERC721BasicToken": { "deploy": false },
       "ERC721Holder": { "deploy": false },
-
       "Ownable": { "deploy": false },
+      // Nuestros contratos
       "SpaceshipToken": {
       },
       "SpaceshipMarketplace": {
         "args": ["$SpaceshipToken"]
-      }
-    }
-  },
-
-  testnet: {
-    deployment:{
-      "accounts": [
-        {
-          "privateKey": "..............."
-        },
-      ],
-      host: "ropsten.infura.io/...............",
-      port: false,
-      protocol: 'https', // <=== must be specified for infura, can also be http, or ws
-      type: "rpc"
-    },
-    contracts: {
-      "SpaceshipToken": {
-        address: "0x79Dc5C2B0b607702f977265595eF33efe68974A6"
-      },
-      "SpaceshipMarketplace": {
-        address: "0xD6B7b28F61BCbE8f044095029FCD3745bea68F4d"
       }
     }
   }

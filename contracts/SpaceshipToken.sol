@@ -69,7 +69,7 @@ contract SpaceshipToken is ERC721Token("CryptoSpaceships", "CST"), Ownable {
         require(ownerOf(_spaceshipId) == address(this));
 
         // Se debe enviar al menos el precio de la nave
-        require(msg.value != 0);
+        require(msg.value >= spaceshipPrices[_spaceshipId]);
 
         // Approvamos directamente para evitar tener que crear una transaccion extra
         // y luego enviamos la nave a quien origino la transaccion

@@ -40,7 +40,7 @@ module.exports = {
         provider: "ipfs",
         host: "ipfs.infura.io",
         port: 5001,
-        protocol: "http",
+        protocol: "https",
         getUrl: "http://ipfs.infura.io/ipfs/"
       }
     ]
