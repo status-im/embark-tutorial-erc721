@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
-import EmbarkJS from 'Embark/EmbarkJS';
 import Ship from './ship';
 import EnableSales from './enableSales';
+import EmbarkJS from 'Embark/EmbarkJS';
 import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
 
@@ -18,40 +18,36 @@ class ShipList extends Component {
 
   componentDidMount(){
     EmbarkJS.onReady((err) => {
-        // Al cargar la lista de naves, determinamos si estan aprobadas para la venta
         const { isApprovedForAll } = SpaceshipToken.methods;
         isApprovedForAll(web3.eth.defaultAccount, SpaceshipMarketplace.options.address)
-            .call()
-            .then(isApproved => {
-                this.setState({salesEnabled: isApproved});
-            });
+        .call()
+        .then(isApproved => {
+            this.setState({salesEnabled: isApproved});
+        });
     });
   }
 
   enableMarketplace = () => {
-    const { setApprovalForAll } = SpaceshipToken.methods;
-
     this.setState({isSubmitting: true});
+
+    const { setApprovalForAll } = SpaceshipToken.methods;
 
     const toSend = setApprovalForAll(SpaceshipMarketplace.options.address, !this.state.salesEnabled);
 
     toSend.estimateGas()
-        .then(estimatedGas => {
-            return toSend.send({from: web3.eth.defaultAccount,
-                                gas: estimatedGas + 1000});
-        })
-        .then(receipt => {
-            this.setState({salesEnabled: !this.state.salesEnabled});
-            console.log(receipt);
-        })
-        .catch((err) => {
-            console.error(err);
-            // TODO: show error blockchain
-            
-        })
-        .finally(() => {
-          this.setState({isSubmitting: false});
-        });
+    .then(estimatedGas => {
+        return toSend.send({gas: estimatedGas + 1000});
+    })
+    .then(receipt => {
+        this.setState({salesEnabled: !this.state.salesEnabled});
+        console.log(receipt);
+    })
+    .catch((err) => {
+        console.error(err);       
+    })
+    .finally(() => {
+        this.setState({isSubmitting: false});
+    });
   }
 
   render = () => {
@@ -61,9 +57,9 @@ class ShipList extends Component {
     return <div id={id}>
       <h3>{title}</h3> 
       { wallet ? <EnableSales isSubmitting={this.state.isSubmitting} handleChange={this.enableMarketplace} salesEnabled={this.state.salesEnabled} /> : ''}
-      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={i} marketplace={marketplace} {...ship} />) }
+      { list.map((ship, i) => <Ship onAction={onAction} wallet={wallet} salesEnabled={salesEnabled} key={ship.id} marketplace={marketplace} {...ship} />) }
       { list.length == 0 
-        ? <p>No hay naves disponibles</p> 
+        ? <p>No ships available</p> 
         : ''
       }
       </div>;

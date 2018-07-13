@@ -1,9 +1,10 @@
-import EmbarkJS from 'Embark/EmbarkJS';
 import React, { Fragment, Component } from 'react';
 import ReactDOM from 'react-dom';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import { Form, FormGroup, FormControl, InputGroup, Button, Grid, Row, Col, ControlLabel} from 'react-bootstrap';
 import Spinner from 'react-spinkit';
+import web3 from "Embark/web3"
+import EmbarkJS from 'Embark/EmbarkJS';
+import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 
 
 class AddToken extends Component {
@@ -29,12 +30,11 @@ class AddToken extends Component {
   handleClick(e){
     e.preventDefault();
 
-    const { mint } = SpaceshipToken.methods;
 
     this.setState({isSubmitting: true});
 
     let attributes = {
-      "name": "Nave Espacial",
+      "name": "Spaceship",
       "image": "", 
       "attributes": {
         "energy": this.state.energy,
@@ -43,56 +43,37 @@ class AddToken extends Component {
       }
     }
 
+    const { mint } = SpaceshipToken.methods;
     let toSend;
 
-    // Cargamos la imagen a IPFS
     EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
     .then(fileHash => {
-      // Agregamos los datos a la lista de atributos
-      attributes.imageHash = fileHash;
       attributes.image = 'https://ipfs.io/ipfs/' + fileHash;
-
-      // Guardamos la lista de atributos
       return EmbarkJS.Storage.saveText(JSON.stringify(attributes))
     })
     .then(attrHash => {
-
-      // El hash que retorna IPFS se almacenara dentro de los datos del token
-      // El precio lo convertimos de ether a wei
       toSend = mint(web3.utils.toHex(attrHash), 
                           this.state.energy, 
                           this.state.lasers, 
                           this.state.shield,
                           web3.utils.toWei(this.state.price, "ether"));
-      
       return toSend.estimateGas();
     })
     .then(estimatedGas => {
-      return toSend.send({from: web3.eth.defaultAccount,
-                          gas: estimatedGas + 1000});
+      return toSend.send({gas: estimatedGas + 1000});
     })
     .then(receipt => {
       console.log(receipt);
-
-      // Vaciar formulario
       this.setState({
-        fileToUpload: [],
         energy: '',
         lasers: '',
         shield: '',
         price: ''
       });
-
       this.props.loadShipsForSale();
-
-      // TODO: show success
-
-      return true;
     })
     .catch((err) => {
       console.error(err);
-      // TODO: show error blockchain / ipfs
-      
     })
     .finally(() => {
       this.setState({isSubmitting: false});
@@ -101,11 +82,11 @@ class AddToken extends Component {
 
   render(){
     return <Grid>
-            <h4>Crear nave</h4>
+            <h4>Create Spaceship</h4>
             <FormGroup>
               <Row>
                 <Col sm={2} md={2}>
-                  <ControlLabel><i className="fa fa-dashboard" aria-hidden="true"></i> Energ&iacute;a</ControlLabel>                  
+                  <ControlLabel><i className="fa fa-dashboard" aria-hidden="true"></i> Energy</ControlLabel>                  
                   <FormControl
                     type="text"
                     value={this.state.energy}
@@ -119,14 +100,14 @@ class AddToken extends Component {
                     onChange={(e) => this.handleChange('lasers', e.target.value)} />
                 </Col>
                 <Col sm={2} md={2}>
-                  <ControlLabel><i className="fa fa-shield" aria-hidden="true"></i> Escudo</ControlLabel>                  
+                  <ControlLabel><i className="fa fa-shield" aria-hidden="true"></i> Shields</ControlLabel>                  
                   <FormControl
                     type="text"
                     value={this.state.shield}
                     onChange={(e) => this.handleChange('shield', e.target.value)} />
                 </Col>
                 <Col sm={2} md={2}>
-                  <ControlLabel>Precio</ControlLabel>                  
+                  <ControlLabel>Price</ControlLabel>                  
                   <InputGroup>
                     <FormControl
                       type="text"
@@ -136,7 +117,7 @@ class AddToken extends Component {
                   </InputGroup>
                 </Col>
                 <Col sm={4} md={4}>
-                  <ControlLabel>Imagen</ControlLabel>                  
+                  <ControlLabel>Image</ControlLabel>                  
                   <FormControl
                     type="file"
                     onChange={(e) => this.handleChange('fileToUpload', [e.target])} />
@@ -147,7 +128,7 @@ class AddToken extends Component {
                   {
                     this.state.isSubmitting 
                     ? <Spinner name="wave" color="coral"/>
-                    : <Button disabled={this.state.isSubmitting} onClick={(e) => this.handleClick(e)}>Crear</Button>
+                    : <Button disabled={this.state.isSubmitting} onClick={(e) => this.handleClick(e)}>Create</Button>
                   }
                 </Col>
               </Row>

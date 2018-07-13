@@ -1,9 +1,9 @@
-import EmbarkJS from 'Embark/EmbarkJS';
-import web3 from "Embark/web3"
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 import { Button, Grid, Row, Col } from 'react-bootstrap';
+import EmbarkJS from 'Embark/EmbarkJS';
+import web3 from "Embark/web3";
+import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 
 class WithdrawBalance extends Component {
 
@@ -17,64 +17,49 @@ class WithdrawBalance extends Component {
 
   componentDidMount(){
     EmbarkJS.onReady((err) => {
-      // Al cargar el componente, obtenemos el balance
-      this._getBalance();
+        this._getBalance();
     });
   }
 
   _getBalance(){
-
-    // Se consulta el balance del contrato
     web3.eth.getBalance(SpaceshipToken.options.address)
-      .then(newBalance => {
-        this.setState({
-          balance: web3.utils.fromWei(newBalance, "ether")
-        });
-      });
-    
+    .then(newBalance => {
+            this.setState({
+                balance: web3.utils.fromWei(newBalance, "ether")
+            });
+    });
   }
 
   handleClick(e){
-    const { withdrawBalance } = SpaceshipToken.methods;
-
     e.preventDefault();
-
     this.setState({isSubmitting: true});
 
-    // Retiramos el balance total del contrato
-    // Estimamos primero el gas para saber cuanto gas enviar
-    
+    const { withdrawBalance } = SpaceshipToken.methods;
+
     const toSend = withdrawBalance();
     toSend.estimateGas()
-      .then(estimatedGas => {
-          // Es una buena practica mandar siempre algo mas del gas estimado
-          return toSend.send({from: web3.eth.defaultAccount,
-                              gas: estimatedGas + 1000});
-      })
-      .then(receipt => {
+    .then(estimatedGas => {
+        return toSend.send({gas: estimatedGas + 1000});
+    })
+    .then(receipt => {
         console.log(receipt);
         this._getBalance();
-        // TODO mostrar info
-
-        return true;
-      })
-      .catch((err) => {
+    })
+    .catch((err) => {
         console.error(err);
-        // TODO: mostrar error
-      })
-      .finally(() => {
+    })
+    .finally(() => {
         this.setState({isSubmitting: false});
-      });
+    });
   }
 
   render(){
     const { balance } = this.state;
     return <Grid>
-        <h4>Fondos</h4>
         <Row>
           <Col sm={3} md={3}>
-            Balance Disponible: <b>{ balance } Ξ</b>              
-            <Button onClick={(e) => this.handleClick(e)} disabled={balance == "0"}>Retirar</Button>
+            Balance: <b>{ balance } Ξ</b>              
+            <Button onClick={(e) => this.handleClick(e)} disabled={balance == "0"}>Withdraw</Button>
           </Col>
         </Row>
       </Grid>;

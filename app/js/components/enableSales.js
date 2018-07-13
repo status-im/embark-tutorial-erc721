@@ -1,4 +1,3 @@
-import EmbarkJS from 'Embark/EmbarkJS';
 import React from 'react';
 import Toggle from 'react-toggle'
 
@@ -11,7 +10,7 @@ const EnableSales = (props) => {
                 onChange={handleChange}
                 disabled={isSubmitting}
                 />
-            <span>Habilitar ventas</span>
+            <span>Enable sales</span>
         </label>
 }
 
