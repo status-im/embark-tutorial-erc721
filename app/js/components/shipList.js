@@ -1,10 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
-import EmbarkJS from 'Embark/EmbarkJS';
 import Ship from './ship';
 import EnableSales from './enableSales';
-import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
-import SpaceshipMarketplace from 'Embark/contracts/SpaceshipMarketplace';
+
 
 class ShipList extends Component {
 
