@@ -1,7 +1,8 @@
 ## Selling our tokens
 A functionality a token marketplace requires is the ability to list and sell your tokens and also be able to buy them. ERC721 and tokens in general require an approval to be able to transfer them. And since we're going to use a different contract to act as an escrow for our buys/sell, we need to allow the user to approve this contract as a temporary owner of our tokens to sell.
 
-[IMAGE_HERE]
+![Selling Ships](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/sellingShip.png)
+
 
 This approval process will be controlled via the toggle above our spaceships section, and this functionality shall be code on `app/js/components/shipList.js`.
 
@@ -78,7 +79,8 @@ componentDidMount(){
 }
 ```
 
-[IMAGE_HERE]
+![Toggle Button](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/toggle.png)
+
 
 Finally, to sell our tokens, we need to edit the file `app/js/components/ship.js` to import our `SpaceshipMarketplace` contract and add the implementation of the `sellShip` method.
 
@@ -156,7 +158,7 @@ _loadMarketPlace = async () => {
 
 Notice that we include new attributes in our list: the owner, and the saleId which is used in the next step, and also, `this.state.marketPlaceShips` is used to store the list of spaceships in the marketplace
 
-[IMAGE_HERE]
+![Marketplace](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/marketplace.png)
 
 ## Buying tokens from the marketplace
 This functionality is very similar to buying the tokens from the store.
