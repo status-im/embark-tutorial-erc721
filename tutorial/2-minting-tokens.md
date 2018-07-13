@@ -1,7 +1,7 @@
 ## DApp overview
 The DApp will be running in http://localhost:8000 . This URL will present a simple site called CryptoSpaceShips, with a form to create the tokens (In this case each token representing a unique spaceship with its own attributes), also, it lists all the tokens you own, that you can buy from the store, and can buy/sell in the market.
 
-[IMAGE_HERE]
+![DAPP](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/initialState.png)
 
 ## Minting tokens
 Each spaceship in this dapp is an ERC721 token, and as such, they have their own characteristics. Since these tokens represent spaceships (that could be used in a game), the attributes they will have are: lasers, shields, and energy, as well as an image.
@@ -23,7 +23,7 @@ import SpaceshipToken from 'Embark/contracts/SpaceshipToken';
 ```
 
 ### Adding functionality to the Create button
-[IMAGE_HERE]
+![Create Form](https://raw.githubusercontent.com/status-im/status-dapp-workshop-mexico/tutorial-series/tutorial/images/form.png)
 
 When you click on the 'Create' button, it will invoke the `handleClick(e)` method which doesn't have a useful implementation at the moment. Let's start by loading the ship's attributes and image into IPFS.
 
@@ -90,7 +90,6 @@ EmbarkJS.Storage.uploadFile(this.state.fileToUpload)
 #### Using our contract to mint the new token
 Finally, once we have both the Image and the Attributes stored in IPFS it's time to mint our new token. This is done in two steps: first, we estimate the gas cost to invoke `mint(bytes _metadataHash, uint8 _energy,  uint8 _lasers, uint8 _shield, uint _price)` (it's a good practice, in order to avoid running into Out of Gas exceptions), and then, we will create the transaction. To estimate gas, use `estimateGas()`. 
  
-
 ```
 const { mint } = SpaceshipToken.methods;
 let toSend;
