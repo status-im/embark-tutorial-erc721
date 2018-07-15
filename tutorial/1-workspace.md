@@ -27,10 +27,11 @@ sudo ./install.sh
 ipfs init
 ```
 
-### Tools and dependencies
+### Other tools and dependencies
 ```
-apt install python ganache-cli git build-essential
+apt install python git build-essential
 npm install node-gyp -g
+npm install ganache-cli -g
 ```
 
 ### Embark
